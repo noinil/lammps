@@ -12,3 +12,7 @@ log.*
 *.exe
 .*.swp
 *.orig
+Makefile.package
+Makefile.package.settings
+lmp_*
+style_*.h

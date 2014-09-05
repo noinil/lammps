@@ -2,6 +2,7 @@
 style_angle.h
 style_atom.h
 style_bond.h
+style_body.h
 style_command.h
 style_compute.h
 style_dihedral.h
@@ -13,6 +14,7 @@ style_kspace.h
 style_minimize.h
 style_pair.h
 style_region.h
+style_reader.h
 # deleted on 13 May 14
 commgrid.cpp
 commgrid.h
@@ -265,3 +267,6 @@ atom_granular.h
 # deleted on Wed Dec 13 00:34:21 2006 +0000
 fix_insert.cpp
 fix_insert.h
+# tan added on Friday, September 05, 2014
+Makefile.package
+Makefile.package.settings
