@@ -225,7 +225,7 @@ void AngleHybrid::settings(int narg, char **arg)
     keywords[nstyles] = new char[strlen(arg[i])+1];
     strcpy(keywords[nstyles],arg[i]);
     istyle = i;
-    if (strcmp(arg[i],"table") == 0) i++;
+    if ((strcmp(arg[i],"table") == 0) || (strcmp(arg[i],"list") == 0)) i++;
     i++;
     while (i < narg && !isalpha(arg[i][0])) i++;
     styles[nstyles]->settings(i-istyle-1,&arg[istyle+1]);
