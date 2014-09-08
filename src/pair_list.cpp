@@ -32,7 +32,7 @@
 using namespace LAMMPS_NS;
 
 static const char * const stylename[] = {
-  "none", "harmonic", "morse", "lj126", "lj1210",NULL
+  "none", "harmonic", "morse", "lj126", NULL
 };
 
 // fast power function for integer exponent > 0
@@ -121,7 +121,6 @@ void PairList::compute(int eflag, int vflag)
     const double dz = x[i].z - x[j].z;
     const double rsq = dx*dx + dy*dy + dz*dz;
 
-
     fpair = epair = 0.0;
     if (check_flag) {
       if (newton_pair || i < nlocal) ++pc;
@@ -160,22 +159,7 @@ void PairList::compute(int eflag, int vflag)
 	if (eflag_either)
 	  epair = 4.0*par.parm.lj126.epsilon*r6inv 
                   * (sig6*sig6*r6inv - sig6) - par.offset;
-      } else if (style[n] == LJ1210) {
-
-	const double r6inv = r2inv*r2inv*r2inv;
-	const double r4inv = r2inv*r2inv;
-	const double sig6  = mypow(par.parm.lj1210.sigma,6);
-	const double sig4  = mypow(par.parm.lj1210.sigma,4);
-	fpair =  60.0*par.parm.lj1210.epsilon*r4inv 
-                 * (sig6*sig6*r4inv*r4inv - sig6*sig4*r6inv) * r2inv;
-
-	if (eflag_either)
-	  epair = par.parm.lj1210.epsilon*r4inv 
-                  * (5.0 * sig6*sig6*r4inv*r4inv - 6.0 * sig6*sig4*r6inv) - par.offset;
       }
-
-
-
 
       if (newton_pair || i < nlocal) {
 	f[i].x += dx*fpair;
@@ -234,7 +218,7 @@ void PairList::settings(int narg, char **arg)
     if (strcmp(arg[2],"check") == 0) check_flag = 1;
   }
 
-  FILE *fp = fopen(arg[0],"r");
+  FILE *fp = force->open_potential(arg[0]);
   char line[1024];
   if (fp == NULL)
     error->all(FLERR,"Cannot open pair list file");
@@ -249,7 +233,9 @@ void PairList::settings(int narg, char **arg)
   // now read and parse pair list file for real
   npairs = 0;
   char *ptr;
-  int id1, id2, nharm=0, nmorse=0, nlj126=0, nlj1210=0;
+  tagint id1, id2;
+  int nharm=0, nmorse=0, nlj126=0;
+
   while(fgets(line,1024,fp)) {
     ptr = strtok(line," \t\n\r\f");
 
@@ -260,11 +246,11 @@ void PairList::settings(int narg, char **arg)
     if (*ptr == '#') continue;
 
     // get atom ids of pair
-    id1 = atoi(ptr);
+    id1 = ATOTAGINT(ptr);
     ptr = strtok(NULL," \t\n\r\f");
     if (!ptr)
       error->all(FLERR,"Incorrectly formatted pair list file");
-    id2 = atoi(ptr);
+    id2 = ATOTAGINT(ptr);
 
     // get potential type
     ptr = strtok(NULL," \t\n\r\f");
@@ -329,22 +315,6 @@ void PairList::settings(int narg, char **arg)
 
       ++nlj126;
 
-    } else if (strcmp(ptr,stylename[LJ1210]) == 0) {
-      // 12-6 lj potential
-      style[npairs] = LJ1210;
-
-      ptr = strtok(NULL," \t\n\r\f");
-      if (!ptr)
-	error->all(FLERR,"Incorrectly formatted 12-10 LJ pair parameters");
-      par.parm.lj1210.epsilon = force->numeric(FLERR,ptr);
-
-      ptr = strtok(NULL," \t\n\r\f");
-      if (!ptr)
-	error->all(FLERR,"Incorrectly formatted 12-10 LJ pair parameters");
-      par.parm.lj1210.sigma = force->numeric(FLERR,ptr);
-
-      ++nlj1210;
-
     } else {
       error->all(FLERR,"Unknown pair list potential style");
     }
@@ -366,11 +336,11 @@ void PairList::settings(int narg, char **arg)
   // informative output
   if (comm->me == 0) {
     if (screen)
-      fprintf(screen,"Read %d (%d/%d/%d/%d) interacting pairs from %s\n",
-	      npairs, nharm, nmorse, nlj126, nlj1210,arg[0]);
+      fprintf(screen,"Read %d (%d/%d/%d) interacting pairs from %s\n",
+	      npairs, nharm, nmorse, nlj126, arg[0]);
     if (logfile)
-      fprintf(logfile,"Read %d (%d/%d/%d/%d) interacting pairs from %s\n",
-	      npairs, nharm, nmorse, nlj126, nlj1210,arg[0]);
+      fprintf(logfile,"Read %d (%d/%d/%d) interacting pairs from %s\n",
+	      npairs, nharm, nmorse, nlj126, arg[0]);
   }
 }
 
@@ -427,12 +397,6 @@ void PairList::init_style()
 	const double r6inv = par.cutsq*par.cutsq*par.cutsq;
 	const double sig6  = mypow(par.parm.lj126.sigma,6);
 	par.offset = 4.0*par.parm.lj126.epsilon*r6inv * (sig6*sig6*r6inv - sig6);
-      } else if (style[n] == LJ1210) {
-	const double r6inv = par.cutsq*par.cutsq*par.cutsq;
-	const double r4inv = par.cutsq*par.cutsq;
-	const double sig6  = mypow(par.parm.lj1210.sigma,6);
-	const double sig4  = mypow(par.parm.lj1210.sigma,4);
-	par.offset = par.parm.lj1210.epsilon*r4inv * (5.0 * sig6*sig6*r4inv*r4inv - 6.0 * sig6 * sig4 * r6inv);
       }
     }
   }

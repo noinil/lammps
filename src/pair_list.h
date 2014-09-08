@@ -39,23 +39,21 @@ class PairList : public Pair {
  protected:
   void allocate();
 
-  enum { NONE=0, HARM, MORSE, LJ126, LJ1210 };
+  enum { NONE=0, HARM, MORSE, LJ126 };
 
   // potential specific parameters
   struct harm_p  { double k, r0;          };
   struct morse_p { double d0, alpha, r0;  };
   struct lj126_p { double epsilon, sigma; };
-  struct lj1210_p { double epsilon, sigma; };
 
   union parm_u { 
     struct harm_p harm;
     struct morse_p morse;
     struct lj126_p lj126;
-    struct lj1210_p lj1210;
   };
 
   typedef struct {
-    int id1,id2;        // global atom ids
+    tagint id1,id2;        // global atom ids
     double cutsq;       // cutoff**2 for this pair
     double offset;      // energy offset
     union parm_u parm;  // parameters for style
