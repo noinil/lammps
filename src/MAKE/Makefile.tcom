@@ -1,4 +1,4 @@
-# tan = Linux, Intel icc, MPICH2, FFTW
+# tcom = Linux, Intel icc, MPICH2, FFTW
 
 SHELL = /bin/sh
 
