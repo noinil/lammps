@@ -380,11 +380,13 @@ void Pair3spn2::compute(int eflag, int vflag)
                     // ------------------ tc_test --------------------- */
                     energy_bp << std::setw(6) << atom->tag[i]
                               << std::setw(6) << atom->tag[j] << " "
+                              << std::setprecision(2)
                               << std::setw(10) << ebasepair
                               << std::endl;
                     ebp_tc += ebasepair;
                     energy_cstk << std::setw(6) << atom->tag[i]
                                 << std::setw(6) << atom->tag[j] << " "
+                                << std::setprecision(2)
                                 << std::setw(10) << ecrossstack
                                 << std::endl;
                     ecstk_tc += ecrossstack;
@@ -423,6 +425,7 @@ void Pair3spn2::compute(int eflag, int vflag)
                         etmp_tc = r6inv*(lj3[itype][jtype]*r6inv-lj4[itype][jtype]) + ljeps[itype][jtype];
                         energy_excl << std::setw(6) << atom->tag[i]
                                     << std::setw(6) << atom->tag[j] << " "
+                                    << std::setprecision(3)
                                     << std::setw(10) << etmp_tc
                                     << std::endl;
                         eexcl_tc += etmp_tc;
@@ -470,6 +473,7 @@ void Pair3spn2::compute(int eflag, int vflag)
                           }
                           energy_coul << std::setw(6) << atom->tag[i]
                                       << std::setw(6) << atom->tag[j] << " "
+                                      << std::setprecision(3)
                                       << std::setw(10) << engy
                                       << std::endl;
                           ecoul_tc += engy;
@@ -528,46 +532,102 @@ void Pair3spn2::compute(int eflag, int vflag)
   energy_coul << "Total electrostatic energy: " << ecoul_tc << std::endl;
   energy_coul << " ================================================== "
               << std::endl;
+  forces_bp << std::setw(6) << "i"
+              << std::setw(12) << "fx"
+              << std::setw(12) << "fy"
+              << std::setw(12) << "fz"
+              << std::setw(12) << "|f|"
+              << std::endl;
+  forces_bp << " -------------------------------------------------------"
+              << std::endl;
+  forces_cstk << std::setw(6) << "i"
+              << std::setw(12) << "fx"
+              << std::setw(12) << "fy"
+              << std::setw(12) << "fz"
+              << std::setw(12) << "|f|"
+              << std::endl;
+  forces_cstk << " -----------------------------------------------------"
+              << std::endl;
+  forces_excl << std::setw(6) << "i"
+              << std::setw(12) << "fx"
+              << std::setw(12) << "fy"
+              << std::setw(12) << "fz"
+              << std::setw(12) << "|f|"
+              << std::endl;
+  forces_excl << " -----------------------------------------------------"
+              << std::endl;
+  forces_coul << std::setw(6) << "i"
+              << std::setw(12) << "fx"
+              << std::setw(12) << "fy"
+              << std::setw(12) << "fz"
+              << std::setw(12) << "|f|"
+              << std::endl;
+  forces_coul << " -----------------------------------------------------"
+              << std::endl;
+
 
   for (int mm = 1; mm < nlocal + 1; mm++) {
       int nn = atom->map(mm);
       double ftc0 = fbp_tc[nn][0] * fbp_tc[nn][0] > 1e-8 ? fbp_tc[nn][0] : 0;
       double ftc1 = fbp_tc[nn][1] * fbp_tc[nn][1] > 1e-8 ? fbp_tc[nn][1] : 0;
       double ftc2 = fbp_tc[nn][2] * fbp_tc[nn][2] > 1e-8 ? fbp_tc[nn][2] : 0;
-      forces_bp << std::setw(6) << mm
+      double ffftc = fbp_tc[nn][0] * fbp_tc[nn][0]
+          + fbp_tc[nn][1] * fbp_tc[nn][1] + fbp_tc[nn][2] * fbp_tc[nn][2];
+      ffftc = sqrt(ffftc);
+      forces_bp << std::setw(6) << mm << "  "
                 << std::setprecision(2) << std::setw(10) << ftc0 << "  "
                 << std::setw(10) << ftc1 << "  "
                 << std::setw(10) << ftc2 << "  "
+                << std::setw(10) << ffftc
                 << std::endl;
+      // ------------------------------
+      ffftc = fcstk_tc[nn][0] * fcstk_tc[nn][0]
+          + fcstk_tc[nn][1] * fcstk_tc[nn][1] + fcstk_tc[nn][2] * fcstk_tc[nn][2];
+      ffftc = sqrt(ffftc);
       ftc0 = fcstk_tc[nn][0] * fcstk_tc[nn][0] > 1e-8 ? fcstk_tc[nn][0] : 0;
       ftc1 = fcstk_tc[nn][1] * fcstk_tc[nn][1] > 1e-8 ? fcstk_tc[nn][1] : 0;
       ftc2 = fcstk_tc[nn][2] * fcstk_tc[nn][2] > 1e-8 ? fcstk_tc[nn][2] : 0;
-      forces_cstk << std::setw(6) << mm
+      forces_cstk << std::setw(6) << mm << "  "
                   << std::setprecision(2) << std::setw(10) << ftc0 << "  "
                   << std::setw(10) << ftc1 << "  "
                   << std::setw(10) << ftc2 << "  "
+                  << std::setw(10) << ffftc
                   << std::endl;
+      // ------------------------------
       ftc0 = fcoul_tc[nn][0] * fcoul_tc[nn][0] > 1e-8 ? fcoul_tc[nn][0] : 0;
       ftc1 = fcoul_tc[nn][1] * fcoul_tc[nn][1] > 1e-8 ? fcoul_tc[nn][1] : 0;
       ftc2 = fcoul_tc[nn][2] * fcoul_tc[nn][2] > 1e-8 ? fcoul_tc[nn][2] : 0;
-      forces_coul << std::setw(6) << mm
+      ffftc = fcoul_tc[nn][0] * fcoul_tc[nn][0]
+          + fcoul_tc[nn][1] * fcoul_tc[nn][1] + fcoul_tc[nn][2] * fcoul_tc[nn][2];
+      ffftc = sqrt(ffftc);
+      forces_coul << std::setw(6) << mm << "  "
                   << std::setprecision(2) << std::setw(10) << ftc0 << " "
                   << std::setw(10) << ftc1 << " "
                   << std::setw(10) << ftc2 << " "
+                  << std::setw(10) << ffftc
                   << std::endl;
+      // ------------------------------
       ftc0 = fexcl_tc[nn][0] * fexcl_tc[nn][0] > 1e-8 ? fexcl_tc[nn][0] : 0;
       ftc1 = fexcl_tc[nn][1] * fexcl_tc[nn][1] > 1e-8 ? fexcl_tc[nn][1] : 0;
       ftc2 = fexcl_tc[nn][2] * fexcl_tc[nn][2] > 1e-8 ? fexcl_tc[nn][2] : 0;
-      forces_excl << std::setw(6) << mm
+      ffftc = fexcl_tc[nn][0] * fexcl_tc[nn][0]
+          + fexcl_tc[nn][1] * fexcl_tc[nn][1] + fexcl_tc[nn][2] * fexcl_tc[nn][2];
+      ffftc = sqrt(ffftc);
+      forces_excl << std::setw(6) << mm << "  "
                   << std::setprecision(2) << std::setw(10) << ftc0 << " "
                   << std::setw(10) << ftc1 << " "
                   << std::setw(10) << ftc2 << " "
+                  << std::setw(10) << ffftc
                   << std::endl;
   }
   forces_bp << " ================================================== "
               << std::endl;
   forces_cstk << " ================================================== "
             << std::endl;
+  forces_coul << " ================================================== "
+              << std::endl;
+  forces_excl << " ================================================== "
+              << std::endl;
 
   // ===================================================
 
