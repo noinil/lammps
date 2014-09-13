@@ -30,6 +30,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* ------------------------------------------------ //
+//      _                         _            _    //
+//   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+//  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+// | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+//  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+//                       |_|                        //
+// ------------------ tc_test --------------------- */
+#include <fstream>
+#include <iomanip>
+// ===================================================
+
 using namespace LAMMPS_NS;
 
 /* ---------------------------------------------------------------------- */
@@ -68,6 +80,19 @@ void BondList::compute(int eflag, int vflag)
   int nbondlist = neighbor->nbondlist;
   int nlocal = atom->nlocal;
   int newton_bond = force->newton_bond;
+
+  /* ------------------------------------------------ //
+  //      _                         _            _    //
+  //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+  //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+  // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+  //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+  //                       |_|                        //
+  // ------------------ tc_test --------------------- */
+  double ftan[nlocal][3];
+  std::ofstream force_file("n_force_bond.dat");
+  force_file << " bonded forces: " << std::endl;
+  // ===================================================
 
   for (n = 0; n < nbondlist; n++) {
     i1 = bondlist[n][0];
@@ -153,12 +178,12 @@ void BondList::settings(int narg, char **arg)
   int idx, id1, id2;
 
   // Loop through the rest of the lines
-  while(fgets(line,1024,fp)) { 
+  while(fgets(line,1024,fp)) {
     ptr = strtok(line," \t\n\r\f");
 
     // skip empty lines
     if (!ptr) continue;
-    
+
     // skip comment lines starting with #
     if (*ptr == '#') continue;
 
@@ -169,7 +194,7 @@ void BondList::settings(int narg, char **arg)
     if (!ptr)
       error->all(FLERR,"Incorrectly formatted bond list file");
     id2 = atoi(ptr);
-    
+
     // Setting the idx in the base array
     idx = id1 + id2;
     if ((idx-1) > array_size)
@@ -180,7 +205,7 @@ void BondList::settings(int narg, char **arg)
     if (!ptr)
       error->all(FLERR,"Incorrectly formatted bond list file");
     r0[idx] = force->numeric(FLERR,ptr);
-    
+
     //k2
     ptr = strtok(NULL," \t\n\r\f");
     if (!ptr)

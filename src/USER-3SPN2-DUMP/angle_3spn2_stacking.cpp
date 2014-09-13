@@ -26,6 +26,17 @@
 #include "math_const.h"
 #include "memory.h"
 #include "error.h"
+/* ------------------------------------------------ //
+//      _                         _            _    //
+//   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+//  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+// | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+//  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+//                       |_|                        //
+// ------------------ tc_test --------------------- */
+#include <fstream>
+#include <iomanip>
+// ===================================================
 
 using namespace LAMMPS_NS;
 using namespace MathConst;
@@ -60,7 +71,7 @@ void Angle3spn2Stacking::compute(int eflag, int vflag)
   double estack,f1[3],f3[3];
   double dtheta,tk;
   double rsq1,rsq2,r1,r2,c,s,a,a11,a12,a22;
-  double argu, fmorse, emorse, cosine, sine, cosine_term, prefactor, estck, rng, 
+  double argu, fmorse, emorse, cosine, sine, cosine_term, prefactor, estck, rng,
     dtha, eangle;
 
   estack = 0.0;
@@ -74,6 +85,29 @@ void Angle3spn2Stacking::compute(int eflag, int vflag)
   int nanglelist = neighbor->nanglelist;
   int nlocal = atom->nlocal;
   int newton_bond = force->newton_bond;
+  /* ------------------------------------------------ //
+  //      _                         _            _    //
+  //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+  //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+  // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+  //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+  //                       |_|                        //
+  // ------------------ tc_test --------------------- */
+  double ftan[nlocal][3];
+  double etan = 0;
+  double etan_total = 0;
+  std::ofstream forces_file("n_force_stacking.dat");
+  std::ofstream energy_file("p_energy_stacking.dat");
+  forces_file << " stacking forces: " << std::endl;
+  energy_file << " stacking energy: " << std::endl;
+  energy_file << std::setw(6) << "stk_i"
+              << std::setw(6) << "i2"
+              << std::setw(6) << "i3"
+              << std::setw(11) << "E_stk"
+              << std::endl;
+  energy_file << " ---------------------------------------------"
+              << std::endl;
+  // ===================================================
 
   for (n = 0; n < nanglelist; n++) {
     estck = 0.0;
@@ -114,7 +148,7 @@ void Angle3spn2Stacking::compute(int eflag, int vflag)
     rng = range[type];
 
     dtha = acos(c) - theta0[type];
-    
+
     if (r2 < sigm[type])
     {
         // A purely repulsive Morse potential...
@@ -125,12 +159,34 @@ void Angle3spn2Stacking::compute(int eflag, int vflag)
             f[i2][0] -= fmorse * delx2;
             f[i2][1] -= fmorse * dely2;
             f[i2][2] -= fmorse * delz2;
+            /* ------------------------------------------------ //
+            //      _                         _            _    //
+            //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+            //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+            // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+            //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+            //                       |_|                        //
+            // ------------------ tc_test --------------------- */
+            ftan[i2][0] -= fmorse * delx2;
+            ftan[i2][1] -= fmorse * dely2;
+            ftan[i2][2] -= fmorse * delz2;
         }
 
         if (newton_bond || i3 < nlocal) {
             f[i3][0] += fmorse * delx2;
             f[i3][1] += fmorse * dely2;
             f[i3][2] += fmorse * delz2;
+            /* ------------------------------------------------ //
+            //      _                         _            _    //
+            //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+            //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+            // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+            //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+            //                       |_|                        //
+            // ------------------ tc_test --------------------- */
+            ftan[i3][0] += fmorse * delx2;
+            ftan[i3][1] += fmorse * dely2;
+            ftan[i3][2] += fmorse * delz2;
         }
 
         if (eflag) estck += epsi[type] * (1.0 - exp(-argu)) * (1.0 - exp(-argu));
@@ -158,18 +214,40 @@ void Angle3spn2Stacking::compute(int eflag, int vflag)
             f[i2][0] -= fmorse * delx2;
             f[i2][1] -= fmorse * dely2;
             f[i2][2] -= fmorse * delz2;
+            /* ------------------------------------------------ //
+            //      _                         _            _    //
+            //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+            //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+            // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+            //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+            //                       |_|                        //
+            // ------------------ tc_test --------------------- */
+            ftan[i2][0] -= fmorse * delx2;
+            ftan[i2][1] -= fmorse * dely2;
+            ftan[i2][2] -= fmorse * delz2;
         }
 
         if (newton_bond || i3 < nlocal) {
             f[i3][0] += fmorse * delx2;
             f[i3][1] += fmorse * dely2;
             f[i3][2] += fmorse * delz2;
+            /* ------------------------------------------------ //
+            //      _                         _            _    //
+            //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+            //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+            // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+            //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+            //                       |_|                        //
+            // ------------------ tc_test --------------------- */
+            ftan[i3][0] += fmorse * delx2;
+            ftan[i3][1] += fmorse * dely2;
+            ftan[i3][2] += fmorse * delz2;
         }
 
         if (eflag) estck += emorse;
     }
     // If the angle falls within the "cone"
-    else if (((dtha >= _PI_/(rng*2.0)) && (dtha <= _PI_/rng)) 
+    else if (((dtha >= _PI_/(rng*2.0)) && (dtha <= _PI_/rng))
         || ((dtha <= -_PI_/(rng*2.0)) && (dtha >= -_PI_/rng)))
     {
         // Calculate pair-wise, attractive-only Morse potential
@@ -187,9 +265,9 @@ void Angle3spn2Stacking::compute(int eflag, int vflag)
         cosine = cos(rng * dtha);
         sine = sin(rng*dtha);
         cosine_term = 1.0 - cosine * cosine;
-        
-        if (eflag) estck += cosine_term * emorse; 
-        
+
+        if (eflag) estck += cosine_term * emorse;
+
         prefactor = 2.0 * rng * cosine * sine * 1.0 /sqrt(1.0-c*c);
 
         a = -prefactor * emorse;
@@ -208,18 +286,51 @@ void Angle3spn2Stacking::compute(int eflag, int vflag)
             f[i1][0] += f1[0];
             f[i1][1] += f1[1];
             f[i1][2] += f1[2];
+            /* ------------------------------------------------ //
+            //      _                         _            _    //
+            //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+            //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+            // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+            //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+            //                       |_|                        //
+            // ------------------ tc_test --------------------- */
+            ftan[i1][0] += f1[0];
+            ftan[i1][1] += f1[1];
+            ftan[i1][2] += f1[2];
         }
 
         if (newton_bond || i2 < nlocal) {
             f[i2][0] -= (f1[0] + f3[0] + cosine_term * delx2 * fmorse);
             f[i2][1] -= (f1[1] + f3[1] + cosine_term * dely2 * fmorse);
             f[i2][2] -= (f1[2] + f3[2] + cosine_term * delz2 * fmorse);
+            /* ------------------------------------------------ //
+            //      _                         _            _    //
+            //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+            //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+            // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+            //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+            //                       |_|                        //
+            // ------------------ tc_test --------------------- */
+            ftan[i2][0] -= (f1[0] + f3[0] + cosine_term * delx2 * fmorse);
+            ftan[i2][1] -= (f1[1] + f3[1] + cosine_term * dely2 * fmorse);
+            ftan[i2][2] -= (f1[2] + f3[2] + cosine_term * delz2 * fmorse);
         }
 
         if (newton_bond || i3 < nlocal) {
             f[i3][0] += f3[0] + cosine_term * delx2 * fmorse;
             f[i3][1] += f3[1] + cosine_term * dely2 * fmorse;
             f[i3][2] += f3[2] + cosine_term * delz2 * fmorse;
+            /* ------------------------------------------------ //
+            //      _                         _            _    //
+            //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+            //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+            // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+            //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+            //                       |_|                        //
+            // ------------------ tc_test --------------------- */
+            ftan[i3][0] += f3[0] + cosine_term * delx2 * fmorse;
+            ftan[i3][1] += f3[1] + cosine_term * dely2 * fmorse;
+            ftan[i3][2] += f3[2] + cosine_term * delz2 * fmorse;
         }
     }
     // If the angle falls outside the "cone"
@@ -228,11 +339,52 @@ void Angle3spn2Stacking::compute(int eflag, int vflag)
         // Do nothing...
     }
     if (eflag) eangle = estck;
+    /* ------------------------------------------------ //
+    //      _                         _            _    //
+    //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+    //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+    // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+    //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+    //                       |_|                        //
+    // ------------------ tc_test --------------------- */
+    etan = estck;
+    etan_total += etan;
+    energy_file << std::setw(6) << n + 1
+                << std::setw(6) << atom->tag[i2]
+                << std::setw(6) << atom->tag[i3] << " "
+                << std::setw(10) << etan
+                << std::endl;
+    // ===================================================
+
 
     // Need to determine how to calculate this virial
     if (evflag) ev_tally(i1,i2,i3,nlocal,newton_bond,eangle, f1,f3,
                          delx1,dely1,delz1,delx2,dely2,delz2);
   }
+  /* ------------------------------------------------ //
+  //      _                         _            _    //
+  //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+  //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+  // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+  //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+  //                       |_|                        //
+  // ------------------ tc_test --------------------- */
+  energy_file << "Total stacking energy: " << etan_total << std::endl;
+  energy_file << " ================================================== "
+              << std::endl;
+  for (int mm = 1; mm < nlocal + 1; mm++) {
+      int nn = atom->map(mm);
+      double ftc0 = ftan[nn][0] * ftan[nn][0] > 1e-8 ? ftan[nn][0] : 0;
+      double ftc1 = ftan[nn][1] * ftan[nn][1] > 1e-8 ? ftan[nn][1] : 0;
+      double ftc2 = ftan[nn][2] * ftan[nn][2] > 1e-8 ? ftan[nn][2] : 0;
+      forces_file << std::setw(6) << mm
+                  << std::setprecision(2) << std::setw(10) << ftc0 << "  "
+                  << std::setw(10) << ftc1 << "  "
+                  << std::setw(10) << ftc2 << "  "
+                  << std::endl;
+  }
+  // ===================================================
+
 }
 
 /* ---------------------------------------------------------------------- */
@@ -383,7 +535,7 @@ double Angle3spn2Stacking::single(int type, int i1, int i2, int i3)
 
     }
     // If the angle falls within the "cone"
-    else if (((dtha >= _PI_/(rng*2.0)) && (dtha <= _PI_/rng)) 
+    else if (((dtha >= _PI_/(rng*2.0)) && (dtha <= _PI_/rng))
         || ((dtha <= -_PI_/(rng*2.0)) && (dtha >= -_PI_/rng)))
     {
         // Calculate pair-wise, attractive-only Morse potential
@@ -399,7 +551,7 @@ double Angle3spn2Stacking::single(int type, int i1, int i2, int i3)
         cosine = cos(rng * dtha);
         cosine_term = 1.0 - cosine * cosine;
         emorse *= cosine_term;
-        
+
         estck += emorse; // I think that estack needs to be added to possible energies to write
     }
     else

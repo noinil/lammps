@@ -62,7 +62,7 @@ void BasePair::assign(int *indices, int *site_type, double ***param, double ***a
           \    /
        Q1  \  /  Q2
             \/  Cross stacking interactions
-            /\ 
+            /\
            /  \
           /    \
          f      e
@@ -140,7 +140,7 @@ void BasePair::assign(int *indices, int *site_type, double ***param, double ***a
         //if (range[i] == EMPTY) error->all(FLERR,"EMPTY value for range value %d",i);
         //if (epsi[i] == EMPTY) error->all(FLERR,"EMPTY value for epsilon %d",i);
     }
-    
+
     // These ar
 
     // Compute distances for all interactions and store
@@ -152,7 +152,7 @@ void BasePair::assign(int *indices, int *site_type, double ***param, double ***a
     }
     else dbax = dbay = dbaz = 1;
     domain->minimum_image(dbax,dbay,dbaz);
-    
+
     if ((typd != EMPTY) && (typc != EMPTY)){
       ddcx = x[sted][0] - x[stec][0];
       ddcy = x[sted][1] - x[stec][1];
@@ -225,7 +225,7 @@ void BasePair::assign(int *indices, int *site_type, double ***param, double ***a
     padx = ebay * edbz - ebaz * edby;
     pady = ebaz * edbx - ebax * edbz;
     padz = ebax * edby - ebay * edbx;
-    cosb = -(ebax * edbx + ebay * edby + ebaz * edbz);  
+    cosb = -(ebax * edbx + ebay * edby + ebaz * edbz);
     if (cosb > (1. - SMALL)) cosb = (1. - SMALL);
     if (cosb < (-1. + SMALL)) cosb = (-1. + SMALL);
     isb2 = 1.0 / (1.0 - cosb * cosb);
@@ -234,7 +234,7 @@ void BasePair::assign(int *indices, int *site_type, double ***param, double ***a
     pbcx = edcz * edby - edcy * edbz;
     pbcy = edcx * edbz - edcz * edbx;
     pbcz = edcy * edbx - edcx * edby;
-    cosd = (edcx * edbx + edcy * edby + edcz * edbz); 
+    cosd = (edcx * edbx + edcy * edby + edcz * edbz);
     if (cosd > (1. - SMALL)) cosd = (1. - SMALL);
     if (cosd < (-1. + SMALL)) cosd = (-1. + SMALL);
     isd2 = 1.0 / (1.0 - cosd * cosd);
@@ -294,7 +294,7 @@ double BasePair::cross_stacking(int c,  double**f)
     fr3x = fr3y = fr3z = 0.0;
     fr4x = fr4y = fr4z = 0.0;
     fr5x = fr5y = fr5z = 0.0;
-    ibp = 2; 
+    ibp = 2;
 
     ecstk = 0.0;
 
@@ -334,7 +334,7 @@ double BasePair::cross_stacking(int c,  double**f)
                 fr2x = pref2 * (dbai * (ebex - ebax * cphi[c+1] ) + dbei * (ebax - cphi[c+1] * ebex)) * engy + ctrm * dbex * frce;
                 fr2y = pref2 * (dbai * (ebey - ebay * cphi[c+1] ) + dbei * (ebay - cphi[c+1] * ebey)) * engy + ctrm * dbey * frce;
                 fr2z = pref2 * (dbai * (ebez - ebaz * cphi[c+1] ) + dbei * (ebaz - cphi[c+1] * ebez)) * engy + ctrm * dbez * frce;
-                // 3 site E      
+                // 3 site E
                 fr3x = pref2 * (dbei * (ebex * cphi[c+1] - ebax)) * engy - ctrm * dbex * frce;
                 fr3y = pref2 * (dbei * (ebey * cphi[c+1] - ebay)) * engy - ctrm * dbey * frce;
                 fr3z = pref2 * (dbei * (ebez * cphi[c+1] - ebaz)) * engy - ctrm * dbez * frce;
@@ -351,7 +351,7 @@ double BasePair::cross_stacking(int c,  double**f)
                 f[stee][1] += fr3y;
                 f[stee][2] += fr3z;
             }
-            else if ((dtha[c+1] > MY_PI/range[c]) ||  (dtha[c+1] < -MY_PI/range[c])) 
+            else if ((dtha[c+1] > MY_PI/range[c]) ||  (dtha[c+1] < -MY_PI/range[c]))
             {
             }
         }
@@ -361,7 +361,7 @@ double BasePair::cross_stacking(int c,  double**f)
             sin2 = sin(range[ibp]*dtha[0]);
             bptrm = 1.0 - cos2 * cos2;
             pref = 2.0 * range[ibp] * cos2 * sin2 * 1.0 /sqrt(1.0-cphi[0]*cphi[0]);
-            
+
             if ( (dtha[c+1] >= -MY_PI/(range[c]*2.0)) && (dtha[c+1] <= MY_PI/(range[c]*2.0)))
             {
                 mors_norp(dbesi, alpha[c], epsi[c], sigm[c], &frce, &engy);
@@ -381,8 +381,8 @@ double BasePair::cross_stacking(int c,  double**f)
                 fr3z = pref * ddci * (edcz * cphi[0] - ebaz) * engy;
                 // Site D
                 fr4x = pref * ddci * (ebax - edcx * cphi[0]) * engy;
-                fr4y = pref * ddci * (ebay - edcy * cphi[0]) * engy; 
-                fr4z = pref * ddci * (ebaz - edcz * cphi[0]) * engy; 
+                fr4y = pref * ddci * (ebay - edcy * cphi[0]) * engy;
+                fr4z = pref * ddci * (ebaz - edcz * cphi[0]) * engy;
                 // Site E
                 fr5x = -bptrm * dbex * frce;
                 fr5y = -bptrm * dbey * frce;
@@ -434,8 +434,8 @@ double BasePair::cross_stacking(int c,  double**f)
                 fr3z = pref * ddci * (edcz * cphi[0] - ebaz) * ctrm * engy;
                 // Site D
                 fr4x = pref * ddci * (ebax - edcx * cphi[0]) * ctrm * engy;
-                fr4y = pref * ddci * (ebay - edcy * cphi[0]) * ctrm * engy; 
-                fr4z = pref * ddci * (ebaz - edcz * cphi[0]) * ctrm * engy; 
+                fr4y = pref * ddci * (ebay - edcy * cphi[0]) * ctrm * engy;
+                fr4z = pref * ddci * (ebaz - edcz * cphi[0]) * ctrm * engy;
                 // Site E
                 fr5x = pref2 * (dbei * (ebex * cphi[c+1] - ebax)) * bptrm * engy - bptrm * ctrm * dbex * frce ;
                 fr5y = pref2 * (dbei * (ebey * cphi[c+1] - ebay)) * bptrm * engy - bptrm * ctrm * dbey * frce ;
@@ -504,7 +504,7 @@ double BasePair::cross_stacking(int c,  double**f)
                 fr2x = pref2 * (ddci * (edfx - cphi[c+1] * edcx) + ddfi * (edcx - cphi[c+1] * edfx)) * engy + ctrm * ddfx * frce;
                 fr2y = pref2 * (ddci * (edfy - cphi[c+1] * edcy) + ddfi * (edcy - cphi[c+1] * edfy)) * engy + ctrm * ddfy * frce;
                 fr2z = pref2 * (ddci * (edfz - cphi[c+1] * edcz) + ddfi * (edcz - cphi[c+1] * edfz)) * engy + ctrm * ddfz * frce;
-                // 3 site F      
+                // 3 site F
                 fr3x = pref2 * (ddfi * (cphi[c+1] * edfx - edcx)) * engy - ctrm * ddfx * frce;
                 fr3y = pref2 * (ddfi * (cphi[c+1] * edfy - edcy)) * engy - ctrm * ddfy * frce;
                 fr3z = pref2 * (ddfi * (cphi[c+1] * edfz - edcz)) * engy - ctrm * ddfz * frce;
@@ -521,7 +521,7 @@ double BasePair::cross_stacking(int c,  double**f)
                 f[stef][1] += fr3y;
                 f[stef][2] += fr3z;
             }
-            else if ((dtha[c+1] > MY_PI/range[c]) || (dtha[c+1] < -MY_PI/range[c])) 
+            else if ((dtha[c+1] > MY_PI/range[c]) || (dtha[c+1] < -MY_PI/range[c]))
             {
             }
         }
@@ -552,8 +552,8 @@ double BasePair::cross_stacking(int c,  double**f)
                 fr3z = pref * ddci * (edcz * cphi[0] - ebaz) * engy;
                 // Site D
                 fr4x = pref * ddci * (ebax - edcx * cphi[0]) * engy + bptrm * ddfx * frce;
-                fr4y = pref * ddci * (ebay - edcy * cphi[0]) * engy + bptrm * ddfy * frce; 
-                fr4z = pref * ddci * (ebaz - edcz * cphi[0]) * engy + bptrm * ddfz * frce; 
+                fr4y = pref * ddci * (ebay - edcy * cphi[0]) * engy + bptrm * ddfy * frce;
+                fr4z = pref * ddci * (ebaz - edcz * cphi[0]) * engy + bptrm * ddfz * frce;
                 // Site F
                 fr5x = -bptrm * ddfx * frce;
                 fr5y = -bptrm * ddfy * frce;
@@ -602,10 +602,10 @@ double BasePair::cross_stacking(int c,  double**f)
                 fr3x = pref * ddci * (edcx * cphi[0] - ebax) * ctrm * engy + pref2 * (ddci * (edcx * cphi[c+1] - edfx)) * bptrm * engy;
                 fr3y = pref * ddci * (edcy * cphi[0] - ebay) * ctrm * engy + pref2 * (ddci * (edcy * cphi[c+1] - edfy)) * bptrm * engy;
                 fr3z = pref * ddci * (edcz * cphi[0] - ebaz) * ctrm * engy + pref2 * (ddci * (edcz * cphi[c+1] - edfz)) * bptrm * engy;
-                // Site D 
+                // Site D
                 fr4x = pref * ddci * (ebax - edcx * cphi[0]) * ctrm * engy + pref2 * (ddci * (edfx - cphi[c+1] * edcx) + ddfi * (edcx - cphi[c+1] * edfx)) * bptrm * engy + bptrm * ctrm * ddfx * frce;
-                fr4y = pref * ddci * (ebay - edcy * cphi[0]) * ctrm * engy + pref2 * (ddci * (edfy - cphi[c+1] * edcy) + ddfi * (edcy - cphi[c+1] * edfy)) * bptrm * engy + bptrm * ctrm * ddfy * frce; 
-                fr4z = pref * ddci * (ebaz - edcz * cphi[0]) * ctrm * engy + pref2 * (ddci * (edfz - cphi[c+1] * edcz) + ddfi * (edcz - cphi[c+1] * edfz)) * bptrm * engy + bptrm * ctrm * ddfz * frce; 
+                fr4y = pref * ddci * (ebay - edcy * cphi[0]) * ctrm * engy + pref2 * (ddci * (edfy - cphi[c+1] * edcy) + ddfi * (edcy - cphi[c+1] * edfy)) * bptrm * engy + bptrm * ctrm * ddfy * frce;
+                fr4z = pref * ddci * (ebaz - edcz * cphi[0]) * ctrm * engy + pref2 * (ddci * (edfz - cphi[c+1] * edcz) + ddfi * (edcz - cphi[c+1] * edfz)) * bptrm * engy + bptrm * ctrm * ddfz * frce;
                 // Site F
                 fr5x = pref2 * (ddfi * (edfx * cphi[c+1] - edcx)) * bptrm * engy - bptrm * ctrm * ddfx * frce ;
                 fr5y = pref2 * (ddfi * (edfy * cphi[c+1] - edcy)) * bptrm * engy - bptrm * ctrm * ddfy * frce ;
@@ -708,7 +708,7 @@ double BasePair::base_pairing(double **f)
         }
         else if (((dtha[itha2] >= MY_PI/(range[ibp]*2.0)) && (dtha[itha2] <= MY_PI/range[ibp])) || ((dtha[itha2] <= -MY_PI/(range[ibp]*2.0)) && (dtha[itha2] >= -MY_PI/range[ibp])))
         {
-            // Now I modulated using thata 2 
+            // Now I modulated using thata 2
             cosine2 = cos(range[ibp]*dtha[itha2]);
             sine2 = sin(range[ibp]*dtha[itha2]);
             hbon_cosine_term2 = 1.0 - cosine2 * cosine2;
@@ -725,7 +725,7 @@ double BasePair::base_pairing(double **f)
             fr2x = prefactor2 * (ddci * (edbx - edcx * cphi[5] ) + ddbi * (edcx - cphi[5] * edbx)) * engy + hbon_cosine_term2 * ddbx * frce;
             fr2y = prefactor2 * (ddci * (edby - edcy * cphi[5] ) + ddbi * (edcy - cphi[5] * edby)) * engy + hbon_cosine_term2 * ddby * frce;
             fr2z = prefactor2 * (ddci * (edbz - edcz * cphi[5] ) + ddbi * (edcz - cphi[5] * edbz)) * engy + hbon_cosine_term2 * ddbz * frce;
-            // 3 site C     
+            // 3 site C
             fr3x = prefactor2 * (ddci * (edcx * cphi[5] - edbx)) * engy;
             fr3y = prefactor2 * (ddci * (edcy * cphi[5] - edby)) * engy;
             fr3z = prefactor2 * (ddci * (edcz * cphi[5] - edbz)) * engy;
@@ -791,7 +791,7 @@ double BasePair::base_pairing(double **f)
             fr2x = prefactor * (dbai * (-edbx - ebax * cphi[4] ) + ddbi * (ebax + cphi[4] * edbx)) * engy - hbon_cosine_term * ddbx * frce;
             fr2y = prefactor * (dbai * (-edby - ebay * cphi[4] ) + ddbi * (ebay + cphi[4] * edby)) * engy - hbon_cosine_term * ddby * frce;
             fr2z = prefactor * (dbai * (-edbz - ebaz * cphi[4] ) + ddbi * (ebaz + cphi[4] * edbz)) * engy - hbon_cosine_term * ddbz * frce;
-            // 3 site D     
+            // 3 site D
             fr3x = prefactor * (ddbi * (-edbx * cphi[4] - ebax)) * engy + hbon_cosine_term * ddbx * frce;
             fr3y = prefactor * (ddbi * (-edby * cphi[4] - ebay)) * engy + hbon_cosine_term * ddby * frce;
             fr3z = prefactor * (ddbi * (-edbz * cphi[4] - ebaz)) * engy + hbon_cosine_term * ddbz * frce;
@@ -843,22 +843,22 @@ double BasePair::base_pairing(double **f)
             ebasepair += phi_factor * hbon_cosine_term * hbon_cosine_term2 * engy;
             prefactor2 = 2.0 * range[ibp] * cosine2 * sine2 * 1.0 /sqrt(1.0-cphi[5]*cphi[5]);
             prefactor = 2.0 * range[ibp] * cosine * sine * 1.0 /sqrt(1.0-cphi[4]*cphi[4]);
-            // Site A 
-            fr1x = prefactor * (dbai * (cphi[4] * ebax + edbx)) * hbon_cosine_term2 * engy; 
-            fr1y = prefactor * (dbai * (cphi[4] * ebay + edby)) * hbon_cosine_term2 * engy; 
-            fr1z = prefactor * (dbai * (cphi[4] * ebaz + edbz)) * hbon_cosine_term2 * engy; 
+            // Site A
+            fr1x = prefactor * (dbai * (cphi[4] * ebax + edbx)) * hbon_cosine_term2 * engy;
+            fr1y = prefactor * (dbai * (cphi[4] * ebay + edby)) * hbon_cosine_term2 * engy;
+            fr1z = prefactor * (dbai * (cphi[4] * ebaz + edbz)) * hbon_cosine_term2 * engy;
             // Site B
-            fr2x = prefactor * (dbai * (-edbx - ebax * cphi[4] ) + ddbi * (ebax + cphi[4] * edbx)) * hbon_cosine_term2 * engy + prefactor2 * (ddbi * (cphi[5] * edbx - edcx)) * hbon_cosine_term * engy - hbon_cosine_term * hbon_cosine_term2 * ddbx * frce; 
-            fr2y = prefactor * (dbai * (-edby - ebay * cphi[4] ) + ddbi * (ebay + cphi[4] * edby)) * hbon_cosine_term2 * engy + prefactor2 * (ddbi * (cphi[5] * edby - edcy)) * hbon_cosine_term * engy - hbon_cosine_term * hbon_cosine_term2 * ddby * frce; 
-            fr2z = prefactor * (dbai * (-edbz - ebaz * cphi[4] ) + ddbi * (ebaz + cphi[4] * edbz)) * hbon_cosine_term2 * engy + prefactor2 * (ddbi * (cphi[5] * edbz - edcz)) * hbon_cosine_term * engy - hbon_cosine_term * hbon_cosine_term2 * ddbz * frce; 
+            fr2x = prefactor * (dbai * (-edbx - ebax * cphi[4] ) + ddbi * (ebax + cphi[4] * edbx)) * hbon_cosine_term2 * engy + prefactor2 * (ddbi * (cphi[5] * edbx - edcx)) * hbon_cosine_term * engy - hbon_cosine_term * hbon_cosine_term2 * ddbx * frce;
+            fr2y = prefactor * (dbai * (-edby - ebay * cphi[4] ) + ddbi * (ebay + cphi[4] * edby)) * hbon_cosine_term2 * engy + prefactor2 * (ddbi * (cphi[5] * edby - edcy)) * hbon_cosine_term * engy - hbon_cosine_term * hbon_cosine_term2 * ddby * frce;
+            fr2z = prefactor * (dbai * (-edbz - ebaz * cphi[4] ) + ddbi * (ebaz + cphi[4] * edbz)) * hbon_cosine_term2 * engy + prefactor2 * (ddbi * (cphi[5] * edbz - edcz)) * hbon_cosine_term * engy - hbon_cosine_term * hbon_cosine_term2 * ddbz * frce;
             // Site C
-            fr3x = prefactor2 * (ddci * (edcx * cphi[5] - edbx)) * hbon_cosine_term * engy; 
-            fr3y = prefactor2 * (ddci * (edcy * cphi[5] - edby)) * hbon_cosine_term * engy; 
-            fr3z = prefactor2 * (ddci * (edcz * cphi[5] - edbz)) * hbon_cosine_term * engy; 
+            fr3x = prefactor2 * (ddci * (edcx * cphi[5] - edbx)) * hbon_cosine_term * engy;
+            fr3y = prefactor2 * (ddci * (edcy * cphi[5] - edby)) * hbon_cosine_term * engy;
+            fr3z = prefactor2 * (ddci * (edcz * cphi[5] - edbz)) * hbon_cosine_term * engy;
             // Site D
-            fr4x = prefactor * (ddbi * (-edbx * cphi[4] - ebax)) * hbon_cosine_term2 * engy + prefactor2 * (ddci * (edbx - edcx * cphi[5] ) + ddbi * (edcx - cphi[5] * edbx)) * hbon_cosine_term * engy + hbon_cosine_term * hbon_cosine_term2 * ddbx * frce; 
-            fr4y = prefactor * (ddbi * (-edby * cphi[4] - ebay)) * hbon_cosine_term2 * engy + prefactor2 * (ddci * (edby - edcy * cphi[5] ) + ddbi * (edcy - cphi[5] * edby)) * hbon_cosine_term * engy + hbon_cosine_term * hbon_cosine_term2 * ddby * frce; 
-            fr4z = prefactor * (ddbi * (-edbz * cphi[4] - ebaz)) * hbon_cosine_term2 * engy + prefactor2 * (ddci * (edbz - edcz * cphi[5] ) + ddbi * (edcz - cphi[5] * edbz)) * hbon_cosine_term * engy + hbon_cosine_term * hbon_cosine_term2 * ddbz * frce; 
+            fr4x = prefactor * (ddbi * (-edbx * cphi[4] - ebax)) * hbon_cosine_term2 * engy + prefactor2 * (ddci * (edbx - edcx * cphi[5] ) + ddbi * (edcx - cphi[5] * edbx)) * hbon_cosine_term * engy + hbon_cosine_term * hbon_cosine_term2 * ddbx * frce;
+            fr4y = prefactor * (ddbi * (-edby * cphi[4] - ebay)) * hbon_cosine_term2 * engy + prefactor2 * (ddci * (edby - edcy * cphi[5] ) + ddbi * (edcy - cphi[5] * edby)) * hbon_cosine_term * engy + hbon_cosine_term * hbon_cosine_term2 * ddby * frce;
+            fr4z = prefactor * (ddbi * (-edbz * cphi[4] - ebaz)) * hbon_cosine_term2 * engy + prefactor2 * (ddci * (edbz - edcz * cphi[5] ) + ddbi * (edcz - cphi[5] * edbz)) * hbon_cosine_term * engy + hbon_cosine_term * hbon_cosine_term2 * ddbz * frce;
 
             f[stea][0] += fr1x * phi_factor;
             f[stea][1] += fr1y * phi_factor;
@@ -902,7 +902,7 @@ double BasePair::base_pairing(double **f)
         {
         }
     }
-    else if ((dtha[itha1] >= MY_PI/range[ibp]) || (dtha[itha1] <= -MY_PI/range[ibp])) 
+    else if ((dtha[itha1] >= MY_PI/range[ibp]) || (dtha[itha1] <= -MY_PI/range[ibp]))
     {
     }
     else
@@ -919,7 +919,7 @@ void BasePair::mors_norp( double drsi, double alfa, double epsi, double sigm,
     double *forc, double *ener)
 {
     double disi, dist, argu;
-    
+
     disi = sqrt(drsi);
     dist = 1.0 / disi;
     if (dist > sigm)
@@ -938,11 +938,11 @@ void BasePair::mors_norp( double drsi, double alfa, double epsi, double sigm,
 
 /* ---------------------------------------------------------------------- */
 
-void BasePair::mors_rp(double drsi, double alfa, double epsi, double sigm, 
+void BasePair::mors_rp(double drsi, double alfa, double epsi, double sigm,
     double *forc, double *ener)
 {
     double disi, dist, argu;
-    
+
     disi = sqrt(drsi);
     dist = 1.0 / disi;
     if (dist < sigm)
@@ -958,4 +958,3 @@ void BasePair::mors_rp(double drsi, double alfa, double epsi, double sigm,
         *forc = 0.0;
     }
 }
-

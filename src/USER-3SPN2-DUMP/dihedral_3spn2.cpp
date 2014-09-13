@@ -29,6 +29,17 @@
 #include "update.h"
 #include "memory.h"
 #include "error.h"
+/* ------------------------------------------------ //
+//      _                         _            _    //
+//   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+//  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+// | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+//  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+//                       |_|                        //
+// ------------------ tc_test --------------------- */
+#include <fstream>
+#include <iomanip>
+// ===================================================
 
 using namespace LAMMPS_NS;
 using namespace MathConst;
@@ -75,16 +86,42 @@ void Dihedral3spn2::compute(int eflag, int vflag)
   int nlocal = atom->nlocal;
   int newton_bond = force->newton_bond;
 
-    double etorsi, virixx, virixy, virixz, viriyx, viriyy, viriyz,
-        virizx, virizy, virizz, xlen, ylen, zlen, xhlf, yhlf, zhlf,
-        xlni, ylni, zlni, dabx, daby, dabz, dbcx, dbcy, dbcz, dcdx,
-        dcdy, dcdz, drab, irab, eabx, eaby, eabz, drbc, irbc, ebcx,
-        ebcy, ebcz, drcd, ircd, ecdx, ecdy, ecdz, pacx, pacy, pacz,
-        cosb, isb2, pbdx, pbdy, pbdz, cosc, isc2, isnc, padx, pady,
-        padz, cnum, isnb, ctau, fra1, frb1, frb2, frc1,
-        frc2, frd1, fabx, faby, fabz, fbcx, fbcy, fbcz, fcdx, fcdy,
-        fcdz;
-    double vb1,vb2, vb3, eax,eay,eaz,ebx,eby,ebz;
+  double etorsi, virixx, virixy, virixz, viriyx, viriyy, viriyz,
+      virizx, virizy, virizz, xlen, ylen, zlen, xhlf, yhlf, zhlf,
+      xlni, ylni, zlni, dabx, daby, dabz, dbcx, dbcy, dbcz, dcdx,
+      dcdy, dcdz, drab, irab, eabx, eaby, eabz, drbc, irbc, ebcx,
+      ebcy, ebcz, drcd, ircd, ecdx, ecdy, ecdz, pacx, pacy, pacz,
+      cosb, isb2, pbdx, pbdy, pbdz, cosc, isc2, isnc, padx, pady,
+      padz, cnum, isnb, ctau, fra1, frb1, frb2, frc1,
+      frc2, frd1, fabx, faby, fabz, fbcx, fbcy, fbcz, fcdx, fcdy,
+      fcdz;
+  double vb1,vb2, vb3, eax,eay,eaz,ebx,eby,ebz;
+  /* ------------------------------------------------ //
+  //      _                         _            _    //
+  //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+  //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+  // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+  //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+  //                       |_|                        //
+  // ------------------ tc_test --------------------- */
+  double ftan[nlocal][3];
+  double etan = 0;
+  double etan_total = 0;
+  std::ofstream forces_file("n_force_dihedral.dat");
+  std::ofstream energy_file("p_energy_dihedral.dat");
+  forces_file << " dihedral forces: " << std::endl;
+  energy_file << " dihedral energy: " << std::endl;
+  energy_file << std::setw(6) << "dih_i"
+              << std::setw(6) << "i1"
+              << std::setw(6) << "i2"
+              << std::setw(6) << "i3"
+              << std::setw(6) << "i4"
+              << std::setw(11) << "E_dih"
+              << std::endl;
+  energy_file << " ---------------------------------------------"
+              << std::endl;
+  // ===================================================
+
   for (n = 0; n < ndihedrallist; n++) {
     i1 = dihedrallist[n][0];
     i2 = dihedrallist[n][1];
@@ -134,7 +171,7 @@ void Dihedral3spn2::compute(int eflag, int vflag)
     // Geting the squared length of a and b
     rasq = ax*ax + ay*ay + az*az;
     rbsq = bx*bx + by*by + bz*bz;
-    rgsq = vb2xm*vb2xm + vb2ym*vb2ym + vb2zm*vb2zm; // 
+    rgsq = vb2xm*vb2xm + vb2ym*vb2ym + vb2zm*vb2zm; //
     rg = sqrt(rgsq);
 
     rginv = ra2inv = rb2inv = 0.0;
@@ -143,10 +180,10 @@ void Dihedral3spn2::compute(int eflag, int vflag)
     if (rbsq > 0) rb2inv = 1.0/rbsq;
     rabinv = sqrt(ra2inv*rb2inv);
 
-    
-    double cx = eay * ebz - eaz * eby; 
-    double cy = eaz * ebx - eax * ebz; 
-    double cz = eax * eby - eay * ebx; 
+
+    double cx = eay * ebz - eaz * eby;
+    double cy = eaz * ebx - eax * ebz;
+    double cz = eax * eby - eay * ebx;
     c = (ax*bx + ay*by + az*bz)*rabinv;
 
     double cnum = (cx * vb2x + cy * vb2y + cz * vb2z)/vb2;
@@ -198,10 +235,28 @@ void Dihedral3spn2::compute(int eflag, int vflag)
     {
         dtor -= 2.0 * MY_PI;
     }
-    
+
     expt = exp(-dtor * dtor/(2.0*sigm[type]*sigm[type]));
     df = -k[type] * dtor * expt / (sigm[type] * sigm[type]);
     if (eflag) edihedral = -k[type] * expt;
+    /* ------------------------------------------------ //
+    //      _                         _            _    //
+    //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+    //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+    // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+    //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+    //                       |_|                        //
+    // ------------------ tc_test --------------------- */
+    etan = -k[type] * expt;
+    etan_total += etan;
+    energy_file << std::setw(6) << n + 1
+                << std::setw(6) << atom->tag[i1]
+                << std::setw(6) << atom->tag[i2]
+                << std::setw(6) << atom->tag[i3]
+                << std::setw(6) << atom->tag[i4] << " "
+                << std::setw(10) << etan
+                << std::endl;
+    // ===================================================
 
     fg = vb1x*vb2xm + vb1y*vb2ym + vb1z*vb2zm;
     hg = vb3x*vb2xm + vb3y*vb2ym + vb3z*vb2zm;
@@ -246,30 +301,98 @@ void Dihedral3spn2::compute(int eflag, int vflag)
       f[i1][0] += f1[0];
       f[i1][1] += f1[1];
       f[i1][2] += f1[2];
+      /* ------------------------------------------------ //
+      //      _                         _            _    //
+      //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+      //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+      // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+      //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+      //                       |_|                        //
+      // ------------------ tc_test --------------------- */
+      ftan[i1][0] += f1[0];
+      ftan[i1][1] += f1[1];
+      ftan[i1][2] += f1[2];
     }
 
     if (newton_bond || i2 < nlocal) {
       f[i2][0] += f2[0];
       f[i2][1] += f2[1];
       f[i2][2] += f2[2];
+      /* ------------------------------------------------ //
+      //      _                         _            _    //
+      //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+      //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+      // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+      //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+      //                       |_|                        //
+      // ------------------ tc_test --------------------- */
+      ftan[i2][0] += f2[0];
+      ftan[i2][1] += f2[1];
+      ftan[i2][2] += f2[2];
     }
 
     if (newton_bond || i3 < nlocal) {
       f[i3][0] += f3[0];
       f[i3][1] += f3[1];
       f[i3][2] += f3[2];
+      /* ------------------------------------------------ //
+      //      _                         _            _    //
+      //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+      //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+      // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+      //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+      //                       |_|                        //
+      // ------------------ tc_test --------------------- */
+      ftan[i3][0] += f3[0];
+      ftan[i3][1] += f3[1];
+      ftan[i3][2] += f3[2];
     }
 
     if (newton_bond || i4 < nlocal) {
       f[i4][0] += f4[0];
       f[i4][1] += f4[1];
       f[i4][2] += f4[2];
+      /* ------------------------------------------------ //
+      //      _                         _            _    //
+      //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+      //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+      // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+      //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+      //                       |_|                        //
+      // ------------------ tc_test --------------------- */
+      ftan[i4][0] += f4[0];
+      ftan[i4][1] += f4[1];
+      ftan[i4][2] += f4[2];
     }
 
     if (evflag)
       ev_tally(i1,i2,i3,i4,nlocal,newton_bond,edihedral,f1,f3,f4,
                vb1x,vb1y,vb1z,vb2x,vb2y,vb2z,vb3x,vb3y,vb3z);
   }
+  /* ------------------------------------------------ //
+  //      _                         _            _    //
+  //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+  //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+  // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+  //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+  //                       |_|                        //
+  // ------------------ tc_test --------------------- */
+  energy_file << "Total dihedral energy: " << etan_total << std::endl;
+  energy_file << " ================================================== "
+              << std::endl;
+  for (int mm = 1; mm < nlocal + 1; mm++) {
+      int nn = atom->map(mm);
+      double ftc0 = ftan[nn][0] * ftan[nn][0] > 1e-8 ? ftan[nn][0] : 0;
+      double ftc1 = ftan[nn][1] * ftan[nn][1] > 1e-8 ? ftan[nn][1] : 0;
+      double ftc2 = ftan[nn][2] * ftan[nn][2] > 1e-8 ? ftan[nn][2] : 0;
+      forces_file << std::setw(6) << mm
+                  << std::setprecision(2) << std::setw(10) << ftc0 << "  "
+                  << std::setw(10) << ftc1 << "  "
+                  << std::setw(10) << ftc2 << "  "
+                  << std::endl;
+  }
+  // ===================================================
+
 }
 
 /* ---------------------------------------------------------------------- */

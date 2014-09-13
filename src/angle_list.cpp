@@ -23,9 +23,20 @@
 #include "memory.h"
 #include "error.h"
 
-#include <stdio.h> 
+#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>     
+#include <string.h>
+/* ------------------------------------------------ //
+//      _                         _            _    //
+//   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+//  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+// | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+//  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+//                       |_|                        //
+// ------------------ tc_test --------------------- */
+#include <fstream>
+#include <iomanip>
+// ===================================================
 
 using namespace LAMMPS_NS;
 using namespace MathConst;
@@ -68,6 +79,18 @@ void AngleList::compute(int eflag, int vflag)
   int nanglelist = neighbor->nanglelist;
   int nlocal = atom->nlocal;
   int newton_bond = force->newton_bond;
+  /* ------------------------------------------------ //
+  //      _                         _            _    //
+  //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+  //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+  // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+  //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+  //                       |_|                        //
+  // ------------------ tc_test --------------------- */
+  double ftan[nlocal][3];
+  std::ofstream force_file("n_force_angle.DAT");
+  force_file << " angle forces: " << std::endl;
+  // ===================================================
 
   for (n = 0; n < nanglelist; n++) {
     i1 = anglelist[n][0];
@@ -181,7 +204,7 @@ void AngleList::settings(int narg, char **arg)
   int num = 1;
   while(fgets(line,1024,fp)) ++num;
   rewind(fp);
-  int array_size = 10*(num+2); 
+  int array_size = 10*(num+2);
   // Allocate arrays that *should* contain all angles
   memory->create(k,array_size,"angle:k");
   memory->create(theta0,array_size,"angle:theta0");
@@ -191,12 +214,12 @@ void AngleList::settings(int narg, char **arg)
   int idx, id1, id2, id3;
 
   // Loop through the rest of the lines
-  while(fgets(line,1024,fp)) { 
+  while(fgets(line,1024,fp)) {
     ptr = strtok(line," \t\n\r\f");
 
     // skip empty lines
     if (!ptr) continue;
-    
+
     // skip comment lines starting with #
     if (*ptr == '#') continue;
 
@@ -213,7 +236,7 @@ void AngleList::settings(int narg, char **arg)
     if (!ptr)
       error->all(FLERR,"Incorrectly formatted angle list file");
     id3 = atoi(ptr);
-    
+
     // Setting the idx in the base array
     idx = id1 + id2 + id3;
     if ((idx-1) > array_size)

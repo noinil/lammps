@@ -32,6 +32,17 @@
 #include "modify.h"
 #include "error.h"
 //#include "base_pair.h"
+/* ------------------------------------------------ //
+//      _                         _            _    //
+//   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+//  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+// | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+//  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+//                       |_|                        //
+// ------------------ tc_test --------------------- */
+#include <fstream>
+#include <iomanip>
+// ===================================================
 
 #define _SF_ 8.908987181403393E-1
 #define _EEF1_ 0.17958712212516656 // 1/pi^(3/2);used in solvation calculation
@@ -49,7 +60,7 @@ using namespace MathConst;
 /* ---------------------------------------------------------------------- */
 
 Pair3spn2::Pair3spn2(LAMMPS *lmp) : Pair(lmp) {
-  // An array to store additional quantities for energy calculations  
+  // An array to store additional quantities for energy calculations
   nextra = 6;
   pvector = new double[nextra];
   tmp_name = NULL;
@@ -82,7 +93,7 @@ Pair3spn2::~Pair3spn2()
     memory->destroy(lambda);
     memory->destroy(DGsolv);
     memory->destroy(volu);
-  
+
     delete [] pvector;
   }
 }
@@ -143,6 +154,72 @@ void Pair3spn2::compute(int eflag, int vflag)
   numneigh = list->numneigh;
   firstneigh = list->firstneigh;
 
+  /* ------------------------------------------------ //
+  //      _                         _            _    //
+  //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+  //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+  // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+  //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+  //                       |_|                        //
+  // ------------------ tc_test --------------------- */
+  double **fbp_tc = new double*[nlocal];
+  double **fcstk_tc = new double*[nlocal];
+  double **fexcl_tc = new double*[nlocal];
+  double ftmp_tc = 0;
+  double **fcoul_tc = new double*[nlocal];
+  for (int nn = 0; nn < nlocal; ++nn) {
+      fbp_tc[nn] = new double[3];
+      fcstk_tc[nn] = new double[3];
+      fcoul_tc[nn] = new double[3];
+      fexcl_tc[nn] = new double[3];
+  }
+  double ebp_tc = 0;
+  double ecstk_tc = 0;
+  double ecoul_tc = 0;
+  double eexcl_tc = 0;
+  double etmp_tc = 0;
+  std::ofstream forces_bp("n_force_bp.dat");
+  std::ofstream forces_cstk("n_force_cstk.dat");
+  std::ofstream forces_excl("n_force_excl.dat");
+  std::ofstream forces_coul("n_force_coul.dat");
+  std::ofstream energy_bp("p_energy_bp.dat");
+  std::ofstream energy_cstk("p_energy_cstk.dat");
+  std::ofstream energy_excl("p_energy_excl.dat");
+  std::ofstream energy_coul("p_energy_coul.dat");
+  forces_bp << " base-pairing forces: " << std::endl;
+  energy_bp << " base-pairing energy: " << std::endl;
+  forces_cstk << " cross-stacking forces: " << std::endl;
+  energy_cstk << " cross-stacking energy: " << std::endl;
+  forces_excl << " exclusive forces: " << std::endl;
+  energy_excl << " exclusive energy: " << std::endl;
+  forces_coul << " electrostatic forces: " << std::endl;
+  energy_coul << " electrostatic energy: " << std::endl;
+  energy_bp << std::setw(6) << "b1"
+            << std::setw(6) << "b2"
+            << std::setw(11) << "E_bp"
+            << std::endl;
+  energy_bp << " ---------------------------------------------"
+            << std::endl;
+  energy_cstk << std::setw(6) << "b1"
+              << std::setw(6) << "b2"
+              << std::setw(11) << "E_cstk"
+              << std::endl;
+  energy_cstk << " ---------------------------------------------"
+              << std::endl;
+  energy_excl << std::setw(6) << "b1"
+              << std::setw(6) << "b2"
+              << std::setw(11) << "E_excl"
+              << std::endl;
+  energy_excl << " ---------------------------------------------"
+              << std::endl;
+  energy_coul << std::setw(6) << "b1"
+              << std::setw(6) << "b2"
+              << std::setw(11) << "E_coul"
+              << std::endl;
+  energy_coul << " ---------------------------------------------"
+              << std::endl;
+  // ===================================================
+
   for (ii = 0; ii < inum; ii++) {
     i = ilist[ii];
     qtmp = q[i];
@@ -179,7 +256,7 @@ void Pair3spn2::compute(int eflag, int vflag)
       else
       {
         if (abs(jtag - itag) > 4) iflag = 1;
-        if (bp_array[itype-1][jtype-1]) 
+        if (bp_array[itype-1][jtype-1])
         {
             if (abs(jtag-itag) > 10) bpflag = 1;
         }
@@ -229,10 +306,10 @@ void Pair3spn2::compute(int eflag, int vflag)
                     for (int q = 0; q < SIX; q++)
                     {
                         if (index[q] != -1){
-                          mytype = atom->type[index[q]];  
+                          mytype = atom->type[index[q]];
                           if (mytype <= 14){
                             //make sure its a dna site
-                            site_type[q] = (mytype - 3) % 4; 
+                            site_type[q] = (mytype - 3) % 4;
                           }
                           else{
                             site_type[q] = EMPTY;
@@ -242,7 +319,7 @@ void Pair3spn2::compute(int eflag, int vflag)
                           site_type[q] = EMPTY;
                         }
                     }
-                   
+
                     // Initializing the distances used for cross stacking
                     basepair->assign(index, site_type ,param, angle, x);
 
@@ -253,6 +330,15 @@ void Pair3spn2::compute(int eflag, int vflag)
                     if (!(bp_array[myitype-1][myjtype-1] % 2))
                     {
                         ecrossstack = basepair->cross_stacking(0,f);  // Interaction 1
+                        /* ------------------------------------------------ //
+                        //      _                         _            _    //
+                        //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+                        //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+                        // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+                        //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+                        //                       |_|                        //
+                        // ------------------ tc_test --------------------- */
+                        etmp_tc = basepair->cross_stacking(0,fcstk_tc);
                     }
 
                     // Calcuate second cross stacking interaction if site b is
@@ -260,10 +346,49 @@ void Pair3spn2::compute(int eflag, int vflag)
                     if (!(bp_array[myitype-1][myjtype-1] % 3))
                     {
                         ecrossstack += basepair->cross_stacking(1,f);  // Interaction 2
+                        /* ------------------------------------------------ //
+                        //      _                         _            _    //
+                        //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+                        //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+                        // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+                        //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+                        //                       |_|                        //
+                        // ------------------ tc_test --------------------- */
+                        etmp_tc = basepair->cross_stacking(1,fcstk_tc);
                     }
-                    
+
                     // Calculating the base pair interaction
                     ebasepair = basepair->base_pairing(f);  // Interaction 3
+                    /* ------------------------------------------------ //
+                    //      _                         _            _    //
+                    //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+                    //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+                    // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+                    //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+                    //                       |_|                        //
+                    // ------------------ tc_test --------------------- */
+                    ebasepair = basepair->base_pairing(fbp_tc);
+
+                    // ==================== add energy ====================
+                    /* ------------------------------------------------ //
+                    //      _                         _            _    //
+                    //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+                    //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+                    // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+                    //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+                    //                       |_|                        //
+                    // ------------------ tc_test --------------------- */
+                    energy_bp << std::setw(6) << atom->tag[i]
+                              << std::setw(6) << atom->tag[j] << " "
+                              << std::setw(10) << ebasepair
+                              << std::endl;
+                    ebp_tc += ebasepair;
+                    energy_cstk << std::setw(6) << atom->tag[i]
+                                << std::setw(6) << atom->tag[j] << " "
+                                << std::setw(10) << ecrossstack
+                                << std::endl;
+                    ecstk_tc += ecrossstack;
+                    // ===================================================
 
                     // Determine whether or not this is indeed a base pair
                     if (ebasepair <  -bp_cutoff * basepair->epsi[2]) nbps++;
@@ -278,7 +403,31 @@ void Pair3spn2::compute(int eflag, int vflag)
                         r6inv = r2inv*r2inv*r2inv;
                         forcelj = r6inv * (lj1[itype][jtype]*r6inv - lj2[itype][jtype]);
                         if (eflag) eexcl += r6inv*(lj3[itype][jtype]*r6inv-lj4[itype][jtype]) + ljeps[itype][jtype];
-                    } 
+                        /* ------------------------------------------------ //
+                        //      _                         _            _    //
+                        //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+                        //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+                        // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+                        //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+                        //                       |_|                        //
+                        // ------------------ tc_test --------------------- */
+                        ftmp_tc = forcelj * r2inv;
+                        fexcl_tc[i][0] += delx*fpair;
+                        fexcl_tc[i][1] += dely*fpair;
+                        fexcl_tc[i][2] += delz*fpair;
+                        if (newton_pair || j < nlocal) {
+                            fexcl_tc[j][0] -= delx*fpair;
+                            fexcl_tc[j][1] -= dely*fpair;
+                            fexcl_tc[j][2] -= delz*fpair;
+                        }
+                        etmp_tc = r6inv*(lj3[itype][jtype]*r6inv-lj4[itype][jtype]) + ljeps[itype][jtype];
+                        energy_excl << std::setw(6) << atom->tag[i]
+                                    << std::setw(6) << atom->tag[j] << " "
+                                    << std::setw(10) << etmp_tc
+                                    << std::endl;
+                        eexcl_tc += etmp_tc;
+                        // ===================================================
+                    }
                     else forcelj = 0.0;
 
                 }
@@ -302,6 +451,29 @@ void Pair3spn2::compute(int eflag, int vflag)
                           engy = qqr2e * qtmp*q[j]*screening * rinv;
                           forcecoul = engy * dr * (ldbi + rinv);
                           if (eflag) ecoul += engy;
+                          /* ------------------------------------------------ //
+                          //      _                         _            _    //
+                          //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+                          //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+                          // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+                          //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+                          //                       |_|                        //
+                          // ------------------ tc_test --------------------- */
+                          ftmp_tc = forcecoul * r2inv;
+                          fcoul_tc[i][0] += delx*fpair;
+                          fcoul_tc[i][1] += dely*fpair;
+                          fcoul_tc[i][2] += delz*fpair;
+                          if (newton_pair || j < nlocal) {
+                              fcoul_tc[j][0] -= delx*fpair;
+                              fcoul_tc[j][1] -= dely*fpair;
+                              fcoul_tc[j][2] -= delz*fpair;
+                          }
+                          energy_coul << std::setw(6) << atom->tag[i]
+                                      << std::setw(6) << atom->tag[j] << " "
+                                      << std::setw(10) << engy
+                                      << std::endl;
+                          ecoul_tc += engy;
+                          // ===================================================
                     }
                 }
             }
@@ -335,6 +507,69 @@ void Pair3spn2::compute(int eflag, int vflag)
   pvector[4] = nbps;
   pvector[5] = nbps_inter;
   evdwl = ebp + ecstk + eexcl;
+
+  /* ------------------------------------------------ //
+  //      _                         _            _    //
+  //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+  //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+  // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+  //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+  //                       |_|                        //
+  // ------------------ tc_test --------------------- */
+  energy_bp << "Total base-pairing energy: " << ebp_tc << std::endl;
+  energy_bp << " ================================================== "
+              << std::endl;
+  energy_cstk << "Total cross-stacking energy: " << ecstk_tc << std::endl;
+  energy_cstk << " ================================================== "
+              << std::endl;
+  energy_excl << "Total exclusive energy: " << eexcl_tc << std::endl;
+  energy_excl << " ================================================== "
+              << std::endl;
+  energy_coul << "Total electrostatic energy: " << ecoul_tc << std::endl;
+  energy_coul << " ================================================== "
+              << std::endl;
+
+  for (int mm = 1; mm < nlocal + 1; mm++) {
+      int nn = atom->map(mm);
+      double ftc0 = fbp_tc[nn][0] * fbp_tc[nn][0] > 1e-8 ? fbp_tc[nn][0] : 0;
+      double ftc1 = fbp_tc[nn][1] * fbp_tc[nn][1] > 1e-8 ? fbp_tc[nn][1] : 0;
+      double ftc2 = fbp_tc[nn][2] * fbp_tc[nn][2] > 1e-8 ? fbp_tc[nn][2] : 0;
+      forces_bp << std::setw(6) << mm
+                << std::setprecision(2) << std::setw(10) << ftc0 << "  "
+                << std::setw(10) << ftc1 << "  "
+                << std::setw(10) << ftc2 << "  "
+                << std::endl;
+      ftc0 = fcstk_tc[nn][0] * fcstk_tc[nn][0] > 1e-8 ? fcstk_tc[nn][0] : 0;
+      ftc1 = fcstk_tc[nn][1] * fcstk_tc[nn][1] > 1e-8 ? fcstk_tc[nn][1] : 0;
+      ftc2 = fcstk_tc[nn][2] * fcstk_tc[nn][2] > 1e-8 ? fcstk_tc[nn][2] : 0;
+      forces_cstk << std::setw(6) << mm
+                  << std::setprecision(2) << std::setw(10) << ftc0 << "  "
+                  << std::setw(10) << ftc1 << "  "
+                  << std::setw(10) << ftc2 << "  "
+                  << std::endl;
+      ftc0 = fcoul_tc[nn][0] * fcoul_tc[nn][0] > 1e-8 ? fcoul_tc[nn][0] : 0;
+      ftc1 = fcoul_tc[nn][1] * fcoul_tc[nn][1] > 1e-8 ? fcoul_tc[nn][1] : 0;
+      ftc2 = fcoul_tc[nn][2] * fcoul_tc[nn][2] > 1e-8 ? fcoul_tc[nn][2] : 0;
+      forces_coul << std::setw(6) << mm
+                  << std::setprecision(2) << std::setw(10) << ftc0 << " "
+                  << std::setw(10) << ftc1 << " "
+                  << std::setw(10) << ftc2 << " "
+                  << std::endl;
+      ftc0 = fexcl_tc[nn][0] * fexcl_tc[nn][0] > 1e-8 ? fexcl_tc[nn][0] : 0;
+      ftc1 = fexcl_tc[nn][1] * fexcl_tc[nn][1] > 1e-8 ? fexcl_tc[nn][1] : 0;
+      ftc2 = fexcl_tc[nn][2] * fexcl_tc[nn][2] > 1e-8 ? fexcl_tc[nn][2] : 0;
+      forces_excl << std::setw(6) << mm
+                  << std::setprecision(2) << std::setw(10) << ftc0 << " "
+                  << std::setw(10) << ftc1 << " "
+                  << std::setw(10) << ftc2 << " "
+                  << std::endl;
+  }
+  forces_bp << " ================================================== "
+              << std::endl;
+  forces_cstk << " ================================================== "
+            << std::endl;
+
+  // ===================================================
 
   // This correctly adds the potential energy.  However, the virial is not calculated properly
   if (evflag) ev_tally(i,j,nlocal,newton_pair,evdwl,ecoul,fpair,delx,dely,delz);
@@ -390,9 +625,9 @@ void Pair3spn2::settings(int narg, char **arg)
   int i,j,k;
   int n = 40; // Hardcoded number of sites
 
-    /* Args: 
+    /* Args:
 
-    Temperature - 
+    Temperature -
     Salt Concentration (mM)
     Short - range cutoff
     (optional) fixID controlling the temperature of simulation
@@ -422,8 +657,8 @@ void Pair3spn2::settings(int narg, char **arg)
   // Name of thermostat fix (optional; used for parallel tempering)
   if (narg == 6) tmp_name = strdup(arg[5]);
 
-  /* 
-  With this information, we can proceeding to initialize a number 
+  /*
+  With this information, we can proceeding to initialize a number
   of important variable that must be hard-coded.
   */
 
@@ -486,7 +721,7 @@ void Pair3spn2::settings(int narg, char **arg)
 
  double hbond[4];
  double ref_hbond_energy, avg_bp_energy, cstk_scale_factor;
- 
+
  double curv_scale_factor = 1.0;
  if (strcmp("bdna/curv",dna_type) == 0) curv_scale_factor = 0.861;
 
@@ -536,7 +771,7 @@ void Pair3spn2::settings(int narg, char **arg)
    avg_cstk /= 32.0;
 
    cstk_scale_factor = avg_bp_energy * 100/88.0 * 0.12/avg_cstk * curv_scale_factor;
-    
+
    for (i = 0; i < FOUR; i++) {
         for (j = 0; j < FOUR; j++) {
             // cstk_1
@@ -547,7 +782,7 @@ void Pair3spn2::settings(int narg, char **arg)
         }
    }
 
-  /* Initializing the base pair array (contains flags that determine whether 
+  /* Initializing the base pair array (contains flags that determine whether
   or not cross stacking interactions are calculated) */
 
     // Initialize all to zero
@@ -556,8 +791,8 @@ void Pair3spn2::settings(int narg, char **arg)
             bp_array[i][j] = 0;
         }
   }
-    
-    /* 
+
+    /*
     flag non-zero - calculate base pairing
        flag divisible by 2 calculate the base pair interaction b--e
        flag divisible by 3 calculate the base pair interaction d--f
@@ -578,10 +813,10 @@ void Pair3spn2::settings(int narg, char **arg)
 /*
   bp_array[14][14] =  {{0,0,0,0,0,0,0,0,0,0,0,0,0,0}, // P
   {0,0,0,0,0,0,0,0,0,0,0,0,0,0}, // S
-  {0,0,0,6,0,0,0,3,0,0,0,6,0,0}, // A 
-  {0,0,6,0,0,0,3,0,0,0,6,0,0,0}, // T 
-  {0,0,0,0,0,6,0,0,0,3,0,0,0,6}, // G 
-  {0,0,0,0,6,0,0,0,3,0,0,0,6,0}, // C 
+  {0,0,0,6,0,0,0,3,0,0,0,6,0,0}, // A
+  {0,0,6,0,0,0,3,0,0,0,6,0,0,0}, // T
+  {0,0,0,0,0,6,0,0,0,3,0,0,0,6}, // G
+  {0,0,0,0,6,0,0,0,3,0,0,0,6,0}, // C
   {0,0,0,6,0,0,0,3,0,0,0,6,0,0}, // 5A
   {0,0,6,0,0,0,3,0,0,0,6,0,0,0}, // 5T
   {0,0,0,0,0,6,0,0,0,3,0,0,0,6}, // 5G
@@ -631,7 +866,7 @@ void Pair3spn2::coeff(int narg, char **arg)
       sigma[i][j] = sigma_one * _SF_;
       cut_lj[i][j] = cut_lj_one;
       cut_coul[i][j] = cut_coul_one;
-      setflag[i][j] = 1; 
+      setflag[i][j] = 1;
       count++;
     }
   }
@@ -1072,7 +1307,7 @@ void Pair3spn2::assign_angles(char *dna_type, double***angles)
         angle[5][3][2] = 159.50;
         angle[5][3][3] = EMPTY;
 
-    
+
     } else if (strcmp("adna",dna_type) == 0) {
         // Angle between ba and dc
         angle[0][0][0] = EMPTY;
@@ -1362,4 +1597,3 @@ void Pair3spn2::assign_distances(char *dna_type, double***param)
         param[2][3][3] = EMPTY;
     } else error->all(FLERR,"Incorrect dna_type in pair_style 3spn2");
 }
-
