@@ -380,13 +380,13 @@ void Pair3spn2::compute(int eflag, int vflag)
                     // ------------------ tc_test --------------------- */
                     energy_bp << std::setw(6) << atom->tag[i]
                               << std::setw(6) << atom->tag[j] << " "
-                              << std::setprecision(2)
+                              << std::setprecision(3)
                               << std::setw(10) << ebasepair
                               << std::endl;
                     ebp_tc += ebasepair;
                     energy_cstk << std::setw(6) << atom->tag[i]
                                 << std::setw(6) << atom->tag[j] << " "
-                                << std::setprecision(2)
+                                << std::setprecision(3)
                                 << std::setw(10) << ecrossstack
                                 << std::endl;
                     ecstk_tc += ecrossstack;
@@ -520,16 +520,24 @@ void Pair3spn2::compute(int eflag, int vflag)
   //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
   //                       |_|                        //
   // ------------------ tc_test --------------------- */
-  energy_bp << "Total base-pairing energy: " << ebp_tc << std::endl;
+  energy_bp << "Total base-pairing energy: "
+            << std::setprecision(4)
+            << ebp_tc << std::endl;
   energy_bp << " ================================================== "
               << std::endl;
-  energy_cstk << "Total cross-stacking energy: " << ecstk_tc << std::endl;
+  energy_cstk << "Total cross-stacking energy: "
+              << std::setprecision(4)
+              << ecstk_tc << std::endl;
   energy_cstk << " ================================================== "
               << std::endl;
-  energy_excl << "Total exclusive energy: " << eexcl_tc << std::endl;
+  energy_excl << "Total exclusive energy: "
+              << std::setprecision(4)
+              << eexcl_tc << std::endl;
   energy_excl << " ================================================== "
               << std::endl;
-  energy_coul << "Total electrostatic energy: " << ecoul_tc << std::endl;
+  energy_coul << "Total electrostatic energy: "
+              << std::setprecision(4)
+              << ecoul_tc << std::endl;
   energy_coul << " ================================================== "
               << std::endl;
   forces_bp << std::setw(6) << "i"
@@ -575,7 +583,7 @@ void Pair3spn2::compute(int eflag, int vflag)
           + fbp_tc[nn][1] * fbp_tc[nn][1] + fbp_tc[nn][2] * fbp_tc[nn][2];
       ffftc = sqrt(ffftc);
       forces_bp << std::setw(6) << mm << "  "
-                << std::setprecision(2) << std::setw(10) << ftc0 << "  "
+                << std::setprecision(3) << std::setw(10) << ftc0 << "  "
                 << std::setw(10) << ftc1 << "  "
                 << std::setw(10) << ftc2 << "  "
                 << std::setw(10) << ffftc
@@ -588,7 +596,7 @@ void Pair3spn2::compute(int eflag, int vflag)
       ftc1 = fcstk_tc[nn][1] * fcstk_tc[nn][1] > 1e-8 ? fcstk_tc[nn][1] : 0;
       ftc2 = fcstk_tc[nn][2] * fcstk_tc[nn][2] > 1e-8 ? fcstk_tc[nn][2] : 0;
       forces_cstk << std::setw(6) << mm << "  "
-                  << std::setprecision(2) << std::setw(10) << ftc0 << "  "
+                  << std::setprecision(3) << std::setw(10) << ftc0 << "  "
                   << std::setw(10) << ftc1 << "  "
                   << std::setw(10) << ftc2 << "  "
                   << std::setw(10) << ffftc
@@ -601,7 +609,7 @@ void Pair3spn2::compute(int eflag, int vflag)
           + fcoul_tc[nn][1] * fcoul_tc[nn][1] + fcoul_tc[nn][2] * fcoul_tc[nn][2];
       ffftc = sqrt(ffftc);
       forces_coul << std::setw(6) << mm << "  "
-                  << std::setprecision(2) << std::setw(10) << ftc0 << " "
+                  << std::setprecision(3) << std::setw(10) << ftc0 << " "
                   << std::setw(10) << ftc1 << " "
                   << std::setw(10) << ftc2 << " "
                   << std::setw(10) << ffftc
@@ -614,7 +622,7 @@ void Pair3spn2::compute(int eflag, int vflag)
           + fexcl_tc[nn][1] * fexcl_tc[nn][1] + fexcl_tc[nn][2] * fexcl_tc[nn][2];
       ffftc = sqrt(ffftc);
       forces_excl << std::setw(6) << mm << "  "
-                  << std::setprecision(2) << std::setw(10) << ftc0 << " "
+                  << std::setprecision(3) << std::setw(10) << ftc0 << " "
                   << std::setw(10) << ftc1 << " "
                   << std::setw(10) << ftc2 << " "
                   << std::setw(10) << ffftc
