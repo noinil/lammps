@@ -104,7 +104,7 @@ void BondQuartic::compute(int eflag, int vflag)
   energy_file << std::setw(6) << "bd4_i"
               << std::setw(6) << "i1"
               << std::setw(6) << "i2"
-              << std::setw(11) << "E_stk"
+              << std::setw(11) << "E_bd4"
               << std::endl;
   energy_file << " ---------------------------------------------"
               << std::endl;

@@ -93,7 +93,7 @@ void AngleHarmonic::compute(int eflag, int vflag)
               << std::setw(6) << "i1"
               << std::setw(6) << "i2"
               << std::setw(6) << "i3"
-              << std::setprecision(2) << std::setw(11) << "E_stk"
+              << std::setprecision(3) << std::setw(11) << "E_ang"
               << std::endl;
   energy_file << " ---------------------------------------------"
               << std::endl;
