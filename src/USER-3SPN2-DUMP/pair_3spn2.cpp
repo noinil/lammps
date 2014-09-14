@@ -173,6 +173,20 @@ void Pair3spn2::compute(int eflag, int vflag)
       fcoul_tc[nn] = new double[3];
       fexcl_tc[nn] = new double[3];
   }
+  for (int nn = 0; nn < nlocal; nn++) {
+      fbp_tc[nn][0] = 0;
+      fbp_tc[nn][1] = 0;
+      fbp_tc[nn][2] = 0;
+      fcstk_tc[nn][0] = 0;
+      fcstk_tc[nn][1] = 0;
+      fcstk_tc[nn][2] = 0;
+      fcoul_tc[nn][0] = 0;
+      fcoul_tc[nn][1] = 0;
+      fcoul_tc[nn][2] = 0;
+      fexcl_tc[nn][0] = 0;
+      fexcl_tc[nn][1] = 0;
+      fexcl_tc[nn][2] = 0;
+  }
   double ebp_tc = 0;
   double ecstk_tc = 0;
   double ecoul_tc = 0;

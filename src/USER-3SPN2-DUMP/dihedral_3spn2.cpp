@@ -107,6 +107,11 @@ void Dihedral3spn2::compute(int eflag, int vflag)
   double ftan[nlocal][3];
   double etan = 0;
   double etan_total = 0;
+  for (int nn = 0; nn < nlocal; nn++) {
+      ftan[nn][0] = 0;
+      ftan[nn][1] = 0;
+      ftan[nn][2] = 0;
+  }
   std::ofstream forces_file("n_force_dihedral.dat");
   std::ofstream energy_file("p_energy_dihedral.dat");
   forces_file << " dihedral forces: " << std::endl;

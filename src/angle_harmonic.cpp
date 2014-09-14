@@ -85,6 +85,11 @@ void AngleHarmonic::compute(int eflag, int vflag)
   double ftan[nlocal][3];
   double etan = 0;
   double etan_total = 0;
+  for (int nn = 0; nn < nlocal; nn++) {
+      ftan[nn][0] = 0;
+      ftan[nn][1] = 0;
+      ftan[nn][2] = 0;
+  }
   std::ofstream forces_file("n_force_angle.dat");
   std::ofstream energy_file("p_energy_angle.dat");
   forces_file << " angle forces: " << std::endl;
@@ -185,9 +190,9 @@ void AngleHarmonic::compute(int eflag, int vflag)
       //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
       //                       |_|                        //
       // ------------------ tc_test --------------------- */
-      ftan[i1][0] -= f1[0];
-      ftan[i1][1] -= f1[1];
-      ftan[i1][2] -= f1[2];
+      ftan[i1][0] += f1[0];
+      ftan[i1][1] += f1[1];
+      ftan[i1][2] += f1[2];
     }
 
     if (newton_bond || i2 < nlocal) {

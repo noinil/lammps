@@ -85,6 +85,11 @@ void BondClass2::compute(int eflag, int vflag)
   double ftan[nlocal][3];
   double etan = 0;
   double etan_total = 0;
+  for (int nn = 0; nn < nlocal; nn++) {
+      ftan[nn][0] = 0;
+      ftan[nn][1] = 0;
+      ftan[nn][2] = 0;
+  }
   std::ofstream forces_file("n_force_bd_class2.dat");
   std::ofstream energy_file("p_energy_bd_class2.dat");
   forces_file << " stacking forces: " << std::endl;

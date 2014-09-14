@@ -35,6 +35,7 @@
 //                       |_|                        //
 // ------------------ tc_test --------------------- */
 #include <fstream>
+#include <iostream>
 #include <iomanip>
 // ===================================================
 
@@ -96,6 +97,11 @@ void Angle3spn2Stacking::compute(int eflag, int vflag)
   double ftan[nlocal][3];
   double etan = 0;
   double etan_total = 0;
+  for (int nn = 0; nn < nlocal; nn++) {
+      ftan[nn][0] = 0;
+      ftan[nn][1] = 0;
+      ftan[nn][2] = 0;
+  }
   std::ofstream forces_file("n_force_stacking.dat");
   std::ofstream energy_file("p_energy_stacking.dat");
   forces_file << " stacking forces: " << std::endl;
@@ -115,6 +121,26 @@ void Angle3spn2Stacking::compute(int eflag, int vflag)
     i2 = anglelist[n][1];
     i3 = anglelist[n][2];
     type = anglelist[n][3];
+
+    /* ------------------------------------------------ //
+    //      _                         _            _    //
+    //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+    //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+    // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+    //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+    //                       |_|                        //
+    // ------------------ tc_test --------------------- */
+    // std::cout << "test: n=" << n
+    //           << ", i1=" << i1
+    //           << ", i2=" << i2
+    //           << ", i2=" << i3
+    //           << ";   a1="
+    //           << atom->tag[i1]
+    //           << ";   a2="
+    //           << atom->tag[i2]
+    //           << ";   a3="
+    //           << atom->tag[i3]
+    //           << std::endl;
 
     // 1st bond
     delx1 = x[i1][0] - x[i2][0];
