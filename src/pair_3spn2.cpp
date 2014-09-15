@@ -165,8 +165,8 @@ void Pair3spn2::compute(int eflag, int vflag)
   double **fbp_tc = new double*[nlocal];
   double **fcstk_tc = new double*[nlocal];
   double **fexcl_tc = new double*[nlocal];
-  double ftmp_tc = 0;
   double **fcoul_tc = new double*[nlocal];
+  double ftmp_tc = 0;
   for (int nn = 0; nn < nlocal; ++nn) {
       fbp_tc[nn] = new double[3];
       fcstk_tc[nn] = new double[3];
@@ -368,7 +368,7 @@ void Pair3spn2::compute(int eflag, int vflag)
                         //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
                         //                       |_|                        //
                         // ------------------ tc_test --------------------- */
-                        etmp_tc = basepair->cross_stacking(1,fcstk_tc);
+                        etmp_tc += basepair->cross_stacking(1,fcstk_tc);
                     }
 
                     // Calculating the base pair interaction
@@ -381,7 +381,7 @@ void Pair3spn2::compute(int eflag, int vflag)
                     //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
                     //                       |_|                        //
                     // ------------------ tc_test --------------------- */
-                    ebasepair = basepair->base_pairing(fbp_tc);
+                    etmp_tc = basepair->base_pairing(fbp_tc);
 
                     // ==================== add energy ====================
                     /* ------------------------------------------------ //
@@ -428,13 +428,13 @@ void Pair3spn2::compute(int eflag, int vflag)
                         //                       |_|                        //
                         // ------------------ tc_test --------------------- */
                         ftmp_tc = forcelj * r2inv;
-                        fexcl_tc[i][0] += delx*fpair;
-                        fexcl_tc[i][1] += dely*fpair;
-                        fexcl_tc[i][2] += delz*fpair;
+                        fexcl_tc[i][0] += delx*ftmp_tc;
+                        fexcl_tc[i][1] += dely*ftmp_tc;
+                        fexcl_tc[i][2] += delz*ftmp_tc;
                         if (newton_pair || j < nlocal) {
-                            fexcl_tc[j][0] -= delx*fpair;
-                            fexcl_tc[j][1] -= dely*fpair;
-                            fexcl_tc[j][2] -= delz*fpair;
+                            fexcl_tc[j][0] -= delx*ftmp_tc;
+                            fexcl_tc[j][1] -= dely*ftmp_tc;
+                            fexcl_tc[j][2] -= delz*ftmp_tc;
                         }
                         etmp_tc = r6inv*(lj3[itype][jtype]*r6inv-lj4[itype][jtype]) + ljeps[itype][jtype];
                         energy_excl << std::setw(6) << atom->tag[i]
@@ -477,13 +477,13 @@ void Pair3spn2::compute(int eflag, int vflag)
                           //                       |_|                        //
                           // ------------------ tc_test --------------------- */
                           ftmp_tc = forcecoul * r2inv;
-                          fcoul_tc[i][0] += delx*fpair;
-                          fcoul_tc[i][1] += dely*fpair;
-                          fcoul_tc[i][2] += delz*fpair;
+                          fcoul_tc[i][0] += delx*ftmp_tc;
+                          fcoul_tc[i][1] += dely*ftmp_tc;
+                          fcoul_tc[i][2] += delz*ftmp_tc;
                           if (newton_pair || j < nlocal) {
-                              fcoul_tc[j][0] -= delx*fpair;
-                              fcoul_tc[j][1] -= dely*fpair;
-                              fcoul_tc[j][2] -= delz*fpair;
+                              fcoul_tc[j][0] -= delx*ftmp_tc;
+                              fcoul_tc[j][1] -= dely*ftmp_tc;
+                              fcoul_tc[j][2] -= delz*ftmp_tc;
                           }
                           energy_coul << std::setw(6) << atom->tag[i]
                                       << std::setw(6) << atom->tag[j] << " "
