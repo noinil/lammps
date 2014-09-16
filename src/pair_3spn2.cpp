@@ -427,15 +427,6 @@ void Pair3spn2::compute(int eflag, int vflag)
                         //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
                         //                       |_|                        //
                         // ------------------ tc_test --------------------- */
-                        ftmp_tc = forcelj * r2inv;
-                        fexcl_tc[i][0] += delx*ftmp_tc;
-                        fexcl_tc[i][1] += dely*ftmp_tc;
-                        fexcl_tc[i][2] += delz*ftmp_tc;
-                        if (newton_pair || j < nlocal) {
-                            fexcl_tc[j][0] -= delx*ftmp_tc;
-                            fexcl_tc[j][1] -= dely*ftmp_tc;
-                            fexcl_tc[j][2] -= delz*ftmp_tc;
-                        }
                         etmp_tc = r6inv*(lj3[itype][jtype]*r6inv-lj4[itype][jtype]) + ljeps[itype][jtype];
                         energy_excl << std::setw(6) << atom->tag[i]
                                     << std::setw(6) << atom->tag[j] << " "
@@ -476,15 +467,6 @@ void Pair3spn2::compute(int eflag, int vflag)
                           //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
                           //                       |_|                        //
                           // ------------------ tc_test --------------------- */
-                          ftmp_tc = forcecoul * r2inv;
-                          fcoul_tc[i][0] += delx*ftmp_tc;
-                          fcoul_tc[i][1] += dely*ftmp_tc;
-                          fcoul_tc[i][2] += delz*ftmp_tc;
-                          if (newton_pair || j < nlocal) {
-                              fcoul_tc[j][0] -= delx*ftmp_tc;
-                              fcoul_tc[j][1] -= dely*ftmp_tc;
-                              fcoul_tc[j][2] -= delz*ftmp_tc;
-                          }
                           energy_coul << std::setw(6) << atom->tag[i]
                                       << std::setw(6) << atom->tag[j] << " "
                                       << std::setprecision(3)
@@ -513,6 +495,32 @@ void Pair3spn2::compute(int eflag, int vflag)
           f[j][0] -= delx*fpair;
           f[j][1] -= dely*fpair;
           f[j][2] -= delz*fpair;
+        }
+        /* ------------------------------------------------ //
+        //      _                         _            _    //
+        //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+        //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+        // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+        //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+        //                       |_|                        //
+        // ------------------ tc_test --------------------- */
+        ftmp_tc = forcelj * r2inv;
+        fexcl_tc[i][0] += delx*ftmp_tc;
+        fexcl_tc[i][1] += dely*ftmp_tc;
+        fexcl_tc[i][2] += delz*ftmp_tc;
+        if (newton_pair || j < nlocal) {
+            fexcl_tc[j][0] -= delx*ftmp_tc;
+            fexcl_tc[j][1] -= dely*ftmp_tc;
+            fexcl_tc[j][2] -= delz*ftmp_tc;
+        }
+        ftmp_tc = forcecoul * r2inv;
+        fcoul_tc[i][0] += delx*ftmp_tc;
+        fcoul_tc[i][1] += dely*ftmp_tc;
+        fcoul_tc[i][2] += delz*ftmp_tc;
+        if (newton_pair || j < nlocal) {
+            fcoul_tc[j][0] -= delx*ftmp_tc;
+            fcoul_tc[j][1] -= dely*ftmp_tc;
+            fcoul_tc[j][2] -= delz*ftmp_tc;
         }
       }
      }
@@ -590,9 +598,12 @@ void Pair3spn2::compute(int eflag, int vflag)
 
   for (int mm = 1; mm < nlocal + 1; mm++) {
       int nn = atom->map(mm);
-      double ftc0 = fbp_tc[nn][0] * fbp_tc[nn][0] > 1e-8 ? fbp_tc[nn][0] : 0;
-      double ftc1 = fbp_tc[nn][1] * fbp_tc[nn][1] > 1e-8 ? fbp_tc[nn][1] : 0;
-      double ftc2 = fbp_tc[nn][2] * fbp_tc[nn][2] > 1e-8 ? fbp_tc[nn][2] : 0;
+      // double ftc0 = fbp_tc[nn][0] * fbp_tc[nn][0] > 1e-8 ? fbp_tc[nn][0] : 0;
+      // double ftc1 = fbp_tc[nn][1] * fbp_tc[nn][1] > 1e-8 ? fbp_tc[nn][1] : 0;
+      // double ftc2 = fbp_tc[nn][2] * fbp_tc[nn][2] > 1e-8 ? fbp_tc[nn][2] : 0;
+      double ftc0 = fbp_tc[nn][0];
+      double ftc1 = fbp_tc[nn][1];
+      double ftc2 = fbp_tc[nn][2];
       double ffftc = fbp_tc[nn][0] * fbp_tc[nn][0]
           + fbp_tc[nn][1] * fbp_tc[nn][1] + fbp_tc[nn][2] * fbp_tc[nn][2];
       ffftc = sqrt(ffftc);
@@ -606,9 +617,12 @@ void Pair3spn2::compute(int eflag, int vflag)
       ffftc = fcstk_tc[nn][0] * fcstk_tc[nn][0]
           + fcstk_tc[nn][1] * fcstk_tc[nn][1] + fcstk_tc[nn][2] * fcstk_tc[nn][2];
       ffftc = sqrt(ffftc);
-      ftc0 = fcstk_tc[nn][0] * fcstk_tc[nn][0] > 1e-8 ? fcstk_tc[nn][0] : 0;
-      ftc1 = fcstk_tc[nn][1] * fcstk_tc[nn][1] > 1e-8 ? fcstk_tc[nn][1] : 0;
-      ftc2 = fcstk_tc[nn][2] * fcstk_tc[nn][2] > 1e-8 ? fcstk_tc[nn][2] : 0;
+      // ftc0 = fcstk_tc[nn][0] * fcstk_tc[nn][0] > 1e-8 ? fcstk_tc[nn][0] : 0;
+      // ftc1 = fcstk_tc[nn][1] * fcstk_tc[nn][1] > 1e-8 ? fcstk_tc[nn][1] : 0;
+      // ftc2 = fcstk_tc[nn][2] * fcstk_tc[nn][2] > 1e-8 ? fcstk_tc[nn][2] : 0;
+      ftc0 = fcstk_tc[nn][0];
+      ftc1 = fcstk_tc[nn][1];
+      ftc2 = fcstk_tc[nn][2];
       forces_cstk << std::setw(6) << mm << "  "
                   << std::setprecision(3) << std::setw(10) << ftc0 << "  "
                   << std::setw(10) << ftc1 << "  "
@@ -616,9 +630,12 @@ void Pair3spn2::compute(int eflag, int vflag)
                   << std::setw(10) << ffftc
                   << std::endl;
       // ------------------------------
-      ftc0 = fcoul_tc[nn][0] * fcoul_tc[nn][0] > 1e-8 ? fcoul_tc[nn][0] : 0;
-      ftc1 = fcoul_tc[nn][1] * fcoul_tc[nn][1] > 1e-8 ? fcoul_tc[nn][1] : 0;
-      ftc2 = fcoul_tc[nn][2] * fcoul_tc[nn][2] > 1e-8 ? fcoul_tc[nn][2] : 0;
+      // ftc0 = fcoul_tc[nn][0] * fcoul_tc[nn][0] > 1e-8 ? fcoul_tc[nn][0] : 0;
+      // ftc1 = fcoul_tc[nn][1] * fcoul_tc[nn][1] > 1e-8 ? fcoul_tc[nn][1] : 0;
+      // ftc2 = fcoul_tc[nn][2] * fcoul_tc[nn][2] > 1e-8 ? fcoul_tc[nn][2] : 0;
+      ftc0 = fcoul_tc[nn][0];
+      ftc1 = fcoul_tc[nn][1];
+      ftc2 = fcoul_tc[nn][2];
       ffftc = fcoul_tc[nn][0] * fcoul_tc[nn][0]
           + fcoul_tc[nn][1] * fcoul_tc[nn][1] + fcoul_tc[nn][2] * fcoul_tc[nn][2];
       ffftc = sqrt(ffftc);
@@ -629,9 +646,12 @@ void Pair3spn2::compute(int eflag, int vflag)
                   << std::setw(10) << ffftc
                   << std::endl;
       // ------------------------------
-      ftc0 = fexcl_tc[nn][0] * fexcl_tc[nn][0] > 1e-8 ? fexcl_tc[nn][0] : 0;
-      ftc1 = fexcl_tc[nn][1] * fexcl_tc[nn][1] > 1e-8 ? fexcl_tc[nn][1] : 0;
-      ftc2 = fexcl_tc[nn][2] * fexcl_tc[nn][2] > 1e-8 ? fexcl_tc[nn][2] : 0;
+      // ftc0 = fexcl_tc[nn][0] * fexcl_tc[nn][0] > 1e-8 ? fexcl_tc[nn][0] : 0;
+      // ftc1 = fexcl_tc[nn][1] * fexcl_tc[nn][1] > 1e-8 ? fexcl_tc[nn][1] : 0;
+      // ftc2 = fexcl_tc[nn][2] * fexcl_tc[nn][2] > 1e-8 ? fexcl_tc[nn][2] : 0;
+      ftc0 = fexcl_tc[nn][0];
+      ftc1 = fexcl_tc[nn][1];
+      ftc2 = fexcl_tc[nn][2];
       ffftc = fexcl_tc[nn][0] * fexcl_tc[nn][0]
           + fexcl_tc[nn][1] * fexcl_tc[nn][1] + fexcl_tc[nn][2] * fexcl_tc[nn][2];
       ffftc = sqrt(ffftc);

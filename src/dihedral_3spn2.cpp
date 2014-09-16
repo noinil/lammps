@@ -395,13 +395,16 @@ void Dihedral3spn2::compute(int eflag, int vflag)
               << std::endl;
   for (int mm = 1; mm < nlocal + 1; mm++) {
       int nn = atom->map(mm);
-      double ftc0 = ftan[nn][0] * ftan[nn][0] > 1e-8 ? ftan[nn][0] : 0;
-      double ftc1 = ftan[nn][1] * ftan[nn][1] > 1e-8 ? ftan[nn][1] : 0;
-      double ftc2 = ftan[nn][2] * ftan[nn][2] > 1e-8 ? ftan[nn][2] : 0;
+      // double ftc0 = ftan[nn][0] * ftan[nn][0] > 1e-8 ? ftan[nn][0] : 0;
+      // double ftc1 = ftan[nn][1] * ftan[nn][1] > 1e-8 ? ftan[nn][1] : 0;
+      // double ftc2 = ftan[nn][2] * ftan[nn][2] > 1e-8 ? ftan[nn][2] : 0;
+      double ftc0 = ftan[nn][0];
+      double ftc1 = ftan[nn][1];
+      double ftc2 = ftan[nn][2];
       double ffftc = ftan[nn][0] * ftan[nn][0] + ftan[nn][1] * ftan[nn][1] + ftan[nn][2] * ftan[nn][2];
       ffftc = sqrt(ffftc);
       forces_file << std::setw(6) << mm << "  "
-                  << std::setprecision(2) << std::setw(10) << ftc0 << "  "
+                  << std::setprecision(5) << std::setw(10) << ftc0 << "  "
                   << std::setw(10) << ftc1 << "  "
                   << std::setw(10) << ftc2 << "  "
                   << std::setw(10) << ffftc

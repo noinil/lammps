@@ -140,27 +140,8 @@ void Verlet::setup()
   // ------------------ tc_test --------------------- */
   double **f = atom->f;
   int nlocal = atom->nlocal;
-  std::ofstream forces_file("n_force_all_test.dat");
-  forces_file << "Initialization (All == 0)"
-              << std::endl;
-  forces_file << " -----------------------------------------------------"
-              << std::endl;
-  for (int mm = 1; mm < nlocal + 1; mm++) {
-      int nn = atom->map(mm);
-      double ftc0 = f[nn][0] * f[nn][0] > 1e-8 ? f[nn][0] : 0;
-      double ftc1 = f[nn][1] * f[nn][1] > 1e-8 ? f[nn][1] : 0;
-      double ftc2 = f[nn][2] * f[nn][2] > 1e-8 ? f[nn][2] : 0;
-      double ffftc = f[nn][0] * f[nn][0] + f[nn][1] * f[nn][1] + f[nn][2] * f[nn][2];
-      ffftc = sqrt(ffftc);
-      forces_file << std::setw(6) << mm
-                  << std::setprecision(2) << std::setw(10) << ftc0 << "  "
-                  << std::setw(10) << ftc1 << "  "
-                  << std::setw(10) << ftc2 << "  "
-                  << std::setw(10) << ffftc
-                  << std::endl;
-  }
-  forces_file << " ================================================== "
-              << std::endl;
+  std::ofstream forces_all("n_force_all.dat");
+  std::ofstream forces_non("n_force_nonlocal.dat");
   // ==================================================
 
   if (pair_compute_flag) force->pair->compute(eflag,vflag);
@@ -173,25 +154,28 @@ void Verlet::setup()
   //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
   //                       |_|                        //
   // ------------------ tc_test --------------------- */
-  forces_file << "After pair compute"
+  forces_non << "After pair compute"
               << std::endl;
-  forces_file << " -----------------------------------------------------"
+  forces_non << " -----------------------------------------------------"
               << std::endl;
   for (int mm = 1; mm < nlocal + 1; mm++) {
       int nn = atom->map(mm);
-      double ftc0 = f[nn][0] * f[nn][0] > 1e-8 ? f[nn][0] : 0;
-      double ftc1 = f[nn][1] * f[nn][1] > 1e-8 ? f[nn][1] : 0;
-      double ftc2 = f[nn][2] * f[nn][2] > 1e-8 ? f[nn][2] : 0;
+      // double ftc0 = f[nn][0] * f[nn][0] > 1e-8 ? f[nn][0] : 0;
+      // double ftc1 = f[nn][1] * f[nn][1] > 1e-8 ? f[nn][1] : 0;
+      // double ftc2 = f[nn][2] * f[nn][2] > 1e-8 ? f[nn][2] : 0;
+      double ftc0 = f[nn][0];
+      double ftc1 = f[nn][1];
+      double ftc2 = f[nn][2];
       double ffftc = f[nn][0] * f[nn][0] + f[nn][1] * f[nn][1] + f[nn][2] * f[nn][2];
       ffftc = sqrt(ffftc);
-      forces_file << std::setw(6) << mm
-                  << std::setprecision(2) << std::setw(10) << ftc0 << "  "
+      forces_non << std::setw(6) << mm << "  "
+                  << std::setprecision(5) << std::setw(10) << ftc0 << "  "
                   << std::setw(10) << ftc1 << "  "
                   << std::setw(10) << ftc2 << "  "
                   << std::setw(10) << ffftc
                   << std::endl;
   }
-  forces_file << " ================================================== "
+  forces_non << " ================================================== "
               << std::endl;
   // ==================================================
 
@@ -209,26 +193,29 @@ void Verlet::setup()
   //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
   //                       |_|                        //
   // ------------------ tc_test --------------------- */
-  forces_file << "After bond compute"
+  forces_all << "After bond compute"
               << std::endl;
-  forces_file << " -----------------------------------------------------"
+  forces_all << " -----------------------------------------------------"
               << std::endl;
   for (int mm = 1; mm < nlocal + 1; mm++) {
       int nn = atom->map(mm);
-      double ftc0 = f[nn][0] * f[nn][0] > 1e-8 ? f[nn][0] : 0;
-      double ftc1 = f[nn][1] * f[nn][1] > 1e-8 ? f[nn][1] : 0;
-      double ftc2 = f[nn][2] * f[nn][2] > 1e-8 ? f[nn][2] : 0;
+      // double ftc0 = f[nn][0] * f[nn][0] > 1e-8 ? f[nn][0] : 0;
+      // double ftc1 = f[nn][1] * f[nn][1] > 1e-8 ? f[nn][1] : 0;
+      // double ftc2 = f[nn][2] * f[nn][2] > 1e-8 ? f[nn][2] : 0;
+      double ftc0 = f[nn][0];
+      double ftc1 = f[nn][1];
+      double ftc2 = f[nn][2];
       double ffftc = f[nn][0] * f[nn][0] + f[nn][1] * f[nn][1] + f[nn][2] * f[nn][2];
       ffftc = sqrt(ffftc);
-      forces_file << std::setw(6) << mm
-                  << std::setprecision(2) << std::setw(10) << ftc0 << "  "
+      forces_all << std::setw(6) << mm << "  "
+                  << std::setprecision(5) << std::setw(10) << ftc0 << "  "
                   << std::setw(10) << ftc1 << "  "
                   << std::setw(10) << ftc2 << "  "
                   << std::setw(10) << ffftc
                   << std::endl;
   }
-  forces_file << " ================================================== "
-              << std::endl;
+  forces_all << " ================================================== "
+             << std::endl;
   // ==================================================
 
   if (force->kspace) {

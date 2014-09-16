@@ -193,7 +193,7 @@ void BondClass2::compute(int eflag, int vflag)
   energy_file << "Total bond class2 energy: " << etan_total << std::endl;
   energy_file << " ================================================== "
               << std::endl;
-  forces_file << std::setw(6) << "i"
+  forces_file << std::setw(6) << "i" << "  "
               << std::setw(10) << "fx"
               << std::setw(12) << "fy"
               << std::setw(12) << "fz"
@@ -203,13 +203,16 @@ void BondClass2::compute(int eflag, int vflag)
               << std::endl;
   for (int mm = 1; mm < nlocal + 1; mm++) {
       int nn = atom->map(mm);
-      double ftc0 = ftan[nn][0] * ftan[nn][0] > 1e-8 ? ftan[nn][0] : 0;
-      double ftc1 = ftan[nn][1] * ftan[nn][1] > 1e-8 ? ftan[nn][1] : 0;
-      double ftc2 = ftan[nn][2] * ftan[nn][2] > 1e-8 ? ftan[nn][2] : 0;
+      // double ftc0 = ftan[nn][0] * ftan[nn][0] > 1e-8 ? ftan[nn][0] : 0;
+      // double ftc1 = ftan[nn][1] * ftan[nn][1] > 1e-8 ? ftan[nn][1] : 0;
+      // double ftc2 = ftan[nn][2] * ftan[nn][2] > 1e-8 ? ftan[nn][2] : 0;
+      double ftc0 = ftan[nn][0];
+      double ftc1 = ftan[nn][1];
+      double ftc2 = ftan[nn][2];
       double ffftc = ftan[nn][0] * ftan[nn][0] + ftan[nn][1] * ftan[nn][1] + ftan[nn][2] * ftan[nn][2];
       ffftc = sqrt(ffftc);
-      forces_file << std::setw(6) << mm
-                  << std::setprecision(2) << std::setw(10) << ftc0 << "  "
+      forces_file << std::setw(6) << mm << "  "
+                  << std::setprecision(5) << std::setw(10) << ftc0 << "  "
                   << std::setw(10) << ftc1 << "  "
                   << std::setw(10) << ftc2 << "  "
                   << std::setw(10) << ffftc

@@ -122,26 +122,6 @@ void Angle3spn2Stacking::compute(int eflag, int vflag)
     i3 = anglelist[n][2];
     type = anglelist[n][3];
 
-    /* ------------------------------------------------ //
-    //      _                         _            _    //
-    //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
-    //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
-    // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
-    //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
-    //                       |_|                        //
-    // ------------------ tc_test --------------------- */
-    // std::cout << "test: n=" << n
-    //           << ", i1=" << i1
-    //           << ", i2=" << i2
-    //           << ", i2=" << i3
-    //           << ";   a1="
-    //           << atom->tag[i1]
-    //           << ";   a2="
-    //           << atom->tag[i2]
-    //           << ";   a3="
-    //           << atom->tag[i3]
-    //           << std::endl;
-
     // 1st bond
     delx1 = x[i1][0] - x[i2][0];
     dely1 = x[i1][1] - x[i2][1];
@@ -408,9 +388,12 @@ void Angle3spn2Stacking::compute(int eflag, int vflag)
               << std::endl;
   for (int mm = 1; mm < nlocal + 1; mm++) {
       int nn = atom->map(mm);
-      double ftc0 = ftan[nn][0] * ftan[nn][0] > 1e-8 ? ftan[nn][0] : 0;
-      double ftc1 = ftan[nn][1] * ftan[nn][1] > 1e-8 ? ftan[nn][1] : 0;
-      double ftc2 = ftan[nn][2] * ftan[nn][2] > 1e-8 ? ftan[nn][2] : 0;
+      // double ftc0 = ftan[nn][0] * ftan[nn][0] > 1e-8 ? ftan[nn][0] : 0;
+      // double ftc1 = ftan[nn][1] * ftan[nn][1] > 1e-8 ? ftan[nn][1] : 0;
+      // double ftc2 = ftan[nn][2] * ftan[nn][2] > 1e-8 ? ftan[nn][2] : 0;
+      double ftc0 = ftan[nn][0];
+      double ftc1 = ftan[nn][1];
+      double ftc2 = ftan[nn][2];
       double ffftc = ftan[nn][0] * ftan[nn][0] + ftan[nn][1] * ftan[nn][1] + ftan[nn][2] * ftan[nn][2];
       ffftc = sqrt(ffftc);
       forces_file << std::setw(6) << mm
