@@ -200,14 +200,15 @@ void Pair3spn2::compute(int eflag, int vflag)
   std::ofstream energy_cstk("p_energy_cstk.dat");
   std::ofstream energy_excl("p_energy_excl.dat");
   std::ofstream energy_coul("p_energy_coul.dat");
-  forces_bp << " base-pairing forces: " << std::endl;
-  energy_bp << " base-pairing energy: " << std::endl;
-  forces_cstk << " cross-stacking forces: " << std::endl;
-  energy_cstk << " cross-stacking energy: " << std::endl;
-  forces_excl << " exclusive forces: " << std::endl;
-  energy_excl << " exclusive energy: " << std::endl;
-  forces_coul << " electrostatic forces: " << std::endl;
-  energy_coul << " electrostatic energy: " << std::endl;
+  forces_bp << "# base-pairing forces: " << std::endl;
+  energy_bp << "# base-pairing energy: " << std::endl;
+  forces_cstk << "# cross-stacking forces: " << std::endl;
+  energy_cstk << "# cross-stacking energy: " << std::endl;
+  forces_excl << "# exclusive forces: " << std::endl;
+  energy_excl << "# exclusive energy: " << std::endl;
+  forces_coul << "# electrostatic forces: " << std::endl;
+  energy_coul << "# electrostatic energy: " << std::endl;
+  energy_coul << "# dielectric constant: " << dielectric << std::endl;
   energy_bp << std::setw(6) << "b1"
             << std::setw(6) << "b2"
             << std::setw(11) << "E_bp"
