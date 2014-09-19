@@ -354,6 +354,18 @@ void Pair3spn2::compute(int eflag, int vflag)
                         //                       |_|                        //
                         // ------------------ tc_test --------------------- */
                         etmp_tc = basepair->cross_stacking(0,fcstk_tc);
+                        int tca = atom->tag[i];
+                        int tcb = atom->tag[j];
+                        if (tca > tcb) {
+                            tca = tca + tcb;
+                            tcb = tca - tcb;
+                            tca = tca - tcb;
+                        }
+                        energy_cstk << std::setw(6) << tca
+                                    << std::setw(6) << tcb - 3 << " "
+                                    << std::setprecision(3)
+                                    << std::setw(10) << etmp_tc
+                                    << std::endl;
                     }
 
                     // Calcuate second cross stacking interaction if site b is
@@ -369,7 +381,19 @@ void Pair3spn2::compute(int eflag, int vflag)
                         //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
                         //                       |_|                        //
                         // ------------------ tc_test --------------------- */
-                        etmp_tc += basepair->cross_stacking(1,fcstk_tc);
+                        etmp_tc = basepair->cross_stacking(1,fcstk_tc);
+                        int tca = atom->tag[i];
+                        int tcb = atom->tag[j];
+                        if (tca > tcb) {
+                            tca = tca + tcb;
+                            tcb = tca - tcb;
+                            tca = tca - tcb;
+                        }
+                        energy_cstk << std::setw(6) << tca + 3
+                                    << std::setw(6) << tcb << " "
+                                    << std::setprecision(3)
+                                    << std::setw(10) << etmp_tc
+                                    << std::endl;
                     }
 
                     // Calculating the base pair interaction
@@ -384,26 +408,13 @@ void Pair3spn2::compute(int eflag, int vflag)
                     // ------------------ tc_test --------------------- */
                     etmp_tc = basepair->base_pairing(fbp_tc);
 
-                    // ==================== add energy ====================
-                    /* ------------------------------------------------ //
-                    //      _                         _            _    //
-                    //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
-                    //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
-                    // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
-                    //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
-                    //                       |_|                        //
-                    // ------------------ tc_test --------------------- */
+                    // -------------------- add energy --------------------
                     energy_bp << std::setw(6) << atom->tag[i]
                               << std::setw(6) << atom->tag[j] << " "
                               << std::setprecision(3)
                               << std::setw(10) << ebasepair
                               << std::endl;
                     ebp_tc += ebasepair;
-                    energy_cstk << std::setw(6) << atom->tag[i]
-                                << std::setw(6) << atom->tag[j] << " "
-                                << std::setprecision(3)
-                                << std::setw(10) << ecrossstack
-                                << std::endl;
                     ecstk_tc += ecrossstack;
                     // ===================================================
 
