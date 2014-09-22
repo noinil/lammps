@@ -25,6 +25,16 @@
 #include "error.h"
 #include "string.h"
 #include "domain.h"
+/* ------------------------------------------------ //
+//      _                         _            _    //
+//   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+//  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+// | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+//  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+//                       |_|                        //
+// ------------------ tc_test --------------------- */
+#include <iostream>
+// ===================================================
 
 using namespace LAMMPS_NS;
 using namespace MathConst;
@@ -301,6 +311,22 @@ double BasePair::cross_stacking(int c,  double**f)
     // Calculate the a - b - e cross-stacking interaction
     if (!c)
     {
+        /* ------------------------------------------------ //
+        //      _                         _            _    //
+        //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+        //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+        // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+        //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+        //                       |_|                        //
+        // ------------------ tc_test --------------------- */
+        // int tcb = atom->tag[steb];
+        // int tce = atom->tag[stee];
+        // std::cout << "b  " << tcb << "  e  " << tce << "    "
+        //           << dtha[0] << "   " << dtha[c+1] << "   "
+        //           <<  -MY_PI/(range[ibp]*2.0) << "  "
+        //           << -MY_PI/(range[c]*2.0)
+        //           << std::endl;
+
         if ( (dtha[0] >= -MY_PI/(range[ibp]*2.0)) && (dtha[0] <= MY_PI/(range[ibp]*2.0)))
         {
             if ( (dtha[c+1] >= -MY_PI/(range[c]*2.0)) && (dtha[c+1] <= MY_PI/(range[c]*2.0)))
@@ -315,7 +341,21 @@ double BasePair::cross_stacking(int c,  double**f)
                 f[steb][0] += frce * dbex;
                 f[steb][1] += frce * dbey;
                 f[steb][2] += frce * dbez;
-
+                /* ------------------------------------------------ //
+                //      _                         _            _    //
+                //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+                //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+                // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+                //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+                //                       |_|                        //
+                // ------------------ tc_test --------------------- */
+                // int tcb = atom->tag[steb];
+                // int tce = atom->tag[stee];
+                // std::cout << "b  " << tcb << "  e  " << tce << "    "
+                //           << dbesi << "  " << alpha[c] << "  "
+                //           << epsi[c] << "  " << sigm[c] << "  "
+                //           << frce << "  " << engy << "  "
+                //           << std::endl;
             }
             else if (((dtha[c+1] >= MY_PI/(range[c]*2.0)) && (dtha[c+1] <= MY_PI/range[c])) || ((dtha[c+1] <= -MY_PI/(range[c]*2.0)) && (dtha[c+1] >= -MY_PI/range[c])))
             {
@@ -670,8 +710,22 @@ double BasePair::base_pairing(double **f)
         f[sted][1] += frce * ddby;
         f[sted][2] += frce * ddbz;
     }
-
-
+    /* ------------------------------------------------ //
+    //      _                         _            _    //
+    //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+    //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+    // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+    //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+    //                       |_|                        //
+    // ------------------ tc_test --------------------- */
+    // int tca = atom->tag[stea];
+    // int tcb = atom->tag[steb];
+    // int tcc = atom->tag[stec];
+    // int tcd = atom->tag[sted];
+    // std::cout << "a  " << tca << "  b  " << tcb << "   c  "
+    //           << tcc << "   d  " << tcd  << "    "
+    //           << dtha[itha1] << "  " << dtha[itha2]
+    //           << std::endl;
 
     if ( (dtha[itha1] >= -MY_PI/(range[ibp]*2.0)) && (dtha[itha1] <= MY_PI/(range[ibp]*2.0)))
     {
@@ -705,6 +759,27 @@ double BasePair::base_pairing(double **f)
             f[stec][0] += frd1 * pbcx;
             f[stec][1] += frd1 * pbcy;
             f[stec][2] += frd1 * pbcz;
+
+            /* ------------------------------------------------ //
+            //      _                         _            _    //
+            //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+            //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+            // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+            //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+            //                       |_|                        //
+            // ------------------ tc_test --------------------- */
+            // int tca = atom->tag[stea];
+            // int tcb = atom->tag[steb];
+            // int tcc = atom->tag[stec];
+            // int tcd = atom->tag[sted];
+            // std::cout << tcb << "   "
+            //           << tcd  << "    "
+            //           // << "  "  << (frb1 * padx + frb2 * pbcx) - second_term * ddbx
+            //           // << "  "  << (frb1 * pady + frb2 * pbcy) - second_term * ddby
+            //           // << "  "  << (frb1 * padz + frb2 * pbcz) - second_term * ddbz
+            //           << "  "  << engy << "   " << frce
+            //           << std::endl;
+
         }
         else if (((dtha[itha2] >= MY_PI/(range[ibp]*2.0)) && (dtha[itha2] <= MY_PI/range[ibp])) || ((dtha[itha2] <= -MY_PI/(range[ibp]*2.0)) && (dtha[itha2] >= -MY_PI/range[ibp])))
         {
@@ -934,6 +1009,20 @@ void BasePair::mors_norp( double drsi, double alfa, double epsi, double sigm,
         *ener = -epsi;
         *forc = 0.0;
     }
+    /* ------------------------------------------------ //
+    //      _                         _            _    //
+    //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+    //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+    // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+    //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+    //                       |_|                        //
+    // ------------------ tc_test --------------------- */
+    // std::cout << dist << "   "
+    //           << alfa << "    "
+    //           << epsi << "    "
+    //           << sigm << "    "
+    //           << "  "  << *ener << "   " << *forc
+    //           << std::endl;
 }
 
 /* ---------------------------------------------------------------------- */
