@@ -1,13 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
-""" 
-Scripts for generating base step parameter files for reading by 
+"""
+Scripts for generating base step parameter files for reading by
 X3DNA.  Reads a sequence file formatted as follows:
 
 <Number of Base Pairs>
 <Sequence>
 
-e.g. 
+e.g.
 20
 TTGCCAACGTCCGACTGAAA
 """
@@ -65,7 +65,7 @@ def write_bp_parameters(sequence):
     file.write("%4d # base-pairs\n" % N)
     file.write("   0 # ***local base-pair & step parameters***\n")
     file.write("#        Shear    Stretch   Stagger   Buckle   Prop-Tw   Opening     Shift     Slide     Rise      Tilt      Roll      Twist\n")
-    
+
     # Write the base step parameters
     for i in range(N):
         bpID = baseDict[sequence[i]]
@@ -95,9 +95,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-

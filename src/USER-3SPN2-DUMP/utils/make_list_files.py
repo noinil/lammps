@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 """
 This script reads the 3spn2_conf_lammps.in file and generates
@@ -157,7 +157,7 @@ class LmpConf:
             typeb = siteDict[self.atoms[d.b-1].type]
             typec = siteDict[self.atoms[d.c-1].type]
             typed = siteDict[self.atoms[d.d-1].type]
-            
+
             if typea is "P" and typeb is "S" and typec is "P" and typed is "S":
                 dihedral_type = 2
             elif typea is "S" and typeb is "P" and typec is "S" and typed is "P":
@@ -253,7 +253,7 @@ class LmpConf:
         if cnum < 0.0:
             aphi = -aphi
         return aphi / math.pi * 180.0
-    
+
     def calculate_bond_distance(self,stea,steb):
         a = self.atoms[stea-1]
         b = self.atoms[steb-1]

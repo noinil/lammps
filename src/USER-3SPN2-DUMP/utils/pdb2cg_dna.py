@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 """
 This tool has been constructed to map a PDB file to a CG representation.  It
@@ -106,7 +106,7 @@ at = {
             "G":9,
             "C":10
             }
-        },  
+        },
     "S":{"P":{"S":1},
         "A":{
             "A":11,
@@ -150,7 +150,7 @@ dt = {
 }
 
 pCharge = -0.6
-    
+
 class System:
     def __init__(self):
         self.molecules = []
@@ -165,7 +165,7 @@ class System:
         self.nbeads = 0
     def number_molecules(self):
         return len(self.molecules)
-   
+
     def generate_statistics(self):
         for i in range(self.number_molecules()):
             self.molecules[i].sequence()
@@ -190,11 +190,11 @@ class System:
             ntorsions = ntorsions + self.molecules[i].number_torsions()
             nbeads = nbeads + self.molecules[i].number_beads()
             shift = shift + self.molecules[i].number_beads()
-        self.nbonds =  nbonds  
-        self.nbends =  nbends  
-        self.nbeads =  nbeads  
-        self.ntorsions = ntorsions   
-            
+        self.nbonds =  nbonds
+        self.nbends =  nbends
+        self.nbeads =  nbeads
+        self.ntorsions = ntorsions
+
     def write_psf(self):
         fptr = open("in00_cvmd.psf","w")
         fptr.write("*\n*\n*\n*\n*\n\n")
@@ -217,9 +217,9 @@ class System:
                 lastresidue = bead.residuenumber
             bead_shift = bead_shift + lastbead
             residue_shift = residue_shift + lastresidue
-        
+
         fptr.write("\n%8ld !NBONDS\n" % self.nbonds)
-        count = 0 
+        count = 0
         for i in range(self.number_molecules()):
             for j in range(self.molecules[i].number_bonds()):
                 count = count + 1
@@ -228,7 +228,7 @@ class System:
                 if count < self.nbonds:
                     if (count % 4) == 0:
                         fptr.write("\n")
-                else:       
+                else:
                     fptr.write("\n\n")
 
         count = 0
@@ -241,9 +241,9 @@ class System:
                 if count < self.nbends:
                     if (count % 3) == 0:
                         fptr.write("\n")
-                else:         
+                else:
                     fptr.write("\n\n")
-    
+
         count = 0
         fptr.write("%8ld !NPHI: dihedrals\n" % self.ntorsions)
         for i in range(self.number_molecules()):
@@ -254,7 +254,7 @@ class System:
                 if count < self.ntorsions:
                     if (count % 2) == 0:
                         fptr.write("\n")
-                else:        
+                else:
                     fptr.write("\n\n")
 
         fptr.write("%8ld !NIMPR\n\n" % 0)
@@ -269,18 +269,18 @@ class System:
         nbeads = 0
         for i in range(self.number_molecules()):
             nbeads = nbeads + self.molecules[i].number_beads()
-        
+
         fptr.write("%ld\n\n" % nbeads)
         for i in range(self.number_molecules()):
             for j in range(self.molecules[i].number_beads()):
                 bead = self.molecules[i].beads[j]
                 fptr.write("%s\t%lf\t%lf\t%lf\n" % (bead.beadtype, bead.x, bead.y, bead.z))
-        fptr.close()            
+        fptr.close()
 
     def write_lammps_cord(self):
         fptr = open("dna_conf.in","w")
         fptr.write("Atoms\n\n")
-        nbeads = 0 
+        nbeads = 0
         for i in range(self.number_molecules()):
             for j in range(self.molecules[i].number_beads()):
                 bead = self.molecules[i].beads[j]
@@ -327,13 +327,13 @@ class System:
                     torsion = self.molecules[i].torsions[j]
                     fptr.write("%ld\t%ld\t%ld\t%ld\t%ld\t%ld\n" % (count,torsion.type, torsion.stea, torsion.steb, torsion.stec, torsion.sted))
         fptr.close()
-    
+
     def write_crd(self):
         fptr = open("in00_conf.crd",'w')
         nbeads = 0
         for i in range(self.number_molecules()):
             nbeads = nbeads + self.molecules[i].number_beads()
-        
+
         fptr.write("%ld\n\n" % nbeads)
         bead_shift = 0
         residue_shift = 0
@@ -349,8 +349,8 @@ class System:
                 lastresidue = bead.residuenumber
             bead_shift = bead_shift + lastbead
             residue_shift = residue_shift + lastresidue
-        fptr.close()            
-      
+        fptr.close()
+
 
     def print_statistics(self):
         print "There are %d molecules" % self.number_molecules()
@@ -421,7 +421,7 @@ class Molecule:
                         beadtype = 'S'
                         c = get_com(sugar)
                         self.beads.append(Bead(beadnumber,residuenumber,residuetype,beadtype, c[0],c[1],c[2],0))
-            
+
                         # Base
                         residuetype = restype[self.sequence[residuenumber-1]]
                         beadnumber = beadnumber + 1
@@ -436,7 +436,7 @@ class Molecule:
                         beadtype = 'P'
                         c = get_com(phosphate)
                         self.beads.append(Bead(beadnumber,residuenumber,residuetype,beadtype, c[0],c[1],c[2],pCharge))
-                        
+
                         # Resetting the atom lists
                         sugar = []
                         base = []
@@ -449,7 +449,7 @@ class Molecule:
                         beadtype = 'S'
                         c = get_com(sugar)
                         self.beads.append(Bead(beadnumber,residuenumber,residuetype,beadtype, c[0],c[1],c[2],0))
-            
+
                         # Base
                         residuetype = restype[self.sequence[residuenumber-1]]
                         beadnumber = beadnumber + 1
@@ -459,7 +459,7 @@ class Molecule:
 
     def topology(self):
         k1 = 1 # Indexing in PSF file starts at 1
-        shift = self.shift 
+        shift = self.shift
         for i in range(self.number_nucleotides()):
             if i == 0:
                 # S - Base
@@ -490,7 +490,7 @@ class Molecule:
                     steb = k1 + 3
                     type = bt[self.beads[stea-1].beadtype][self.beads[steb-1].beadtype]
                     self.bonds.append(Bond(stea ,steb, shift,type))
-                k1 = k1 + 3     
+                k1 = k1 + 3
         cben = 0 # Bend counter
         for i in range(self.number_bonds()-1):
             for j in range(i+1,self.number_bonds()):
@@ -515,8 +515,8 @@ class Molecule:
                     type = at[istea][isteb][jstea]
                     self.bends.append(Bend(self.bonds[i].stea,self.bonds[i].steb,self.bonds[j].stea,type))
                     cben = cben + 1
-        
-        ctor = 0 
+
+        ctor = 0
         for i in range(cben-1):
             for j in range(i+1,cben):
                 istea = self.beads[self.bends[i].stea-1 - shift].beadtype
@@ -545,7 +545,7 @@ class Molecule:
                         self.torsions.append(Torsion(self.bends[j].stec, self.bends[j].steb,self.bends[j].stea,self.bends[i].stec,type))
                         ctor  = ctor + 1
 
-        
+
         # Building stacking interactions
         for i in range(self.number_nucleotides()-1):
             stea = 3 * i + 1 + shift
@@ -568,10 +568,10 @@ class Molecule:
                 residue = tmp
                 matchSeq = reSeq.search(self.atoms[i].residuetype)
                 sequence.append(matchSeq.group(1))
-        self.nNucleotides = len(sequence)        
+        self.nNucleotides = len(sequence)
         string = ''.join(sequence)
-        self.sequence = string 
-    
+        self.sequence = string
+
 class Atom(object):
     def __init__(self,number,name,residuetype,moleculeletter,residuenumber,x,y,z, atomtype):
         self.number = number
@@ -584,7 +584,7 @@ class Atom(object):
         self.z = z
         self.atomtype = atomtype
         self.mass = masses[atomtype]
-   
+
 class Bead(object):
     def __init__(self,beadnumber,residuenumber,residuetype,beadtype, x,y,z,charge):
         self.beadnumber = beadnumber
@@ -671,7 +671,7 @@ def read_pdb(filename,system):
                 count = count - 1
         elif line[0] == "ENDMDL":
             break
-        else:    
+        else:
             None
     fptr.close()
 
