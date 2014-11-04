@@ -92,8 +92,8 @@ void BondClass2::compute(int eflag, int vflag)
   }
   std::ofstream forces_file("n_force_bd_class2.dat");
   std::ofstream energy_file("p_energy_bd_class2.dat");
-  forces_file << " stacking forces: " << std::endl;
-  energy_file << " stacking energy: " << std::endl;
+  forces_file << " bonded class2 forces: " << std::endl;
+  energy_file << " bonded class2 energy: " << std::endl;
   energy_file << std::setw(6) << "bd2_i"
               << std::setw(6) << "i1"
               << std::setw(6) << "i2"
@@ -182,7 +182,7 @@ void BondClass2::compute(int eflag, int vflag)
 
     if (evflag) ev_tally(i1,i2,nlocal,newton_bond,ebond,fbond,delx,dely,delz);
   }
-    /* ------------------------------------------------ //
+  /* ------------------------------------------------ //
   //      _                         _            _    //
   //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
   //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //

@@ -90,8 +90,24 @@ void BondList::compute(int eflag, int vflag)
   //                       |_|                        //
   // ------------------ tc_test --------------------- */
   double ftan[nlocal][3];
-  std::ofstream force_file("n_force_bond.dat");
-  force_file << " bonded forces: " << std::endl;
+  double etan = 0;
+  double etan_total = 0;
+  for (int nn = 0; nn < nlocal; nn++) {
+      ftan[nn][0] = 0;
+      ftan[nn][1] = 0;
+      ftan[nn][2] = 0;
+  }
+  std::ofstream forces_file("n_force_bond_3spn2c.dat");
+  std::ofstream energy_file("p_energy_bond_3spn2c.dat");
+  forces_file << " bonded 3spn2c forces: " << std::endl;
+  energy_file << " bonded 3spn2c energy: " << std::endl;
+  energy_file << std::setw(6) << "bd2_i"
+              << std::setw(6) << "i1"
+              << std::setw(6) << "i2"
+              << std::setw(11) << "E_bnd"
+              << std::endl;
+  energy_file << " ---------------------------------------------"
+              << std::endl;
   // ===================================================
 
   for (n = 0; n < nbondlist; n++) {
@@ -118,22 +134,101 @@ void BondList::compute(int eflag, int vflag)
 
     if (eflag) ebond = k2[type]*dr2 + k3[type]*dr3 + k4[type]*dr4;
 
+    /* ------------------------------------------------ //
+    //      _                         _            _    //
+    //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+    //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+    // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+    //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+    //                       |_|                        //
+    // ------------------ tc_test --------------------- */
+    etan = k2[type]*dr2 + k3[type]*dr3 + k4[type]*dr4;
+    etan_total += etan;
+    energy_file << std::setw(6) << n + 1
+                << std::setw(6) << atom->tag[i1]
+                << std::setw(6) << atom->tag[i2] << " "
+                << std::setprecision(3) << std::setw(10) << etan
+                << std::endl;
+    // ===================================================
+
     // apply force to each of 2 atoms
 
     if (newton_bond || i1 < nlocal) {
       f[i1][0] += delx*fbond;
       f[i1][1] += dely*fbond;
       f[i1][2] += delz*fbond;
+      /* ------------------------------------------------ //
+      //      _                         _            _    //
+      //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+      //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+      // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+      //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+      //                       |_|                        //
+      // ------------------ tc_test --------------------- */
+      ftan[i1][0] += delx*fbond;
+      ftan[i1][1] += dely*fbond;
+      ftan[i1][2] += delz*fbond;
     }
 
     if (newton_bond || i2 < nlocal) {
       f[i2][0] -= delx*fbond;
       f[i2][1] -= dely*fbond;
       f[i2][2] -= delz*fbond;
+      /* ------------------------------------------------ //
+      //      _                         _            _    //
+      //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+      //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+      // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+      //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+      //                       |_|                        //
+      // ------------------ tc_test --------------------- */
+      ftan[i2][0] -= delx*fbond;
+      ftan[i2][1] -= dely*fbond;
+      ftan[i2][2] -= delz*fbond;
     }
 
     if (evflag) ev_tally(i1,i2,nlocal,newton_bond,ebond,fbond,delx,dely,delz);
   }
+  /* ------------------------------------------------ //
+  //      _                         _            _    //
+  //   __| |_   _ _ __ ___  _ __   | |_ ___  ___| |_  //
+  //  / _` | | | | '_ ` _ \| '_ \  | __/ _ \/ __| __| //
+  // | (_| | |_| | | | | | | |_) | | ||  __/\__ \ |_  //
+  //  \__,_|\__,_|_| |_| |_| .__/   \__\___||___/\__| //
+  //                       |_|                        //
+  // ------------------ tc_test --------------------- */
+  energy_file << "Total bond class2 energy: " << etan_total << std::endl;
+  energy_file << " ================================================== "
+              << std::endl;
+  forces_file << std::setw(6) << "i" << "  "
+              << std::setw(10) << "fx"
+              << std::setw(12) << "fy"
+              << std::setw(12) << "fz"
+              << std::setw(12) << "|f|"
+              << std::endl;
+  forces_file << " -----------------------------------------------------"
+              << std::endl;
+  for (int mm = 1; mm < nlocal + 1; mm++) {
+      int nn = atom->map(mm);
+      // double ftc0 = ftan[nn][0] * ftan[nn][0] > 1e-8 ? ftan[nn][0] : 0;
+      // double ftc1 = ftan[nn][1] * ftan[nn][1] > 1e-8 ? ftan[nn][1] : 0;
+      // double ftc2 = ftan[nn][2] * ftan[nn][2] > 1e-8 ? ftan[nn][2] : 0;
+      double ftc0 = ftan[nn][0];
+      double ftc1 = ftan[nn][1];
+      double ftc2 = ftan[nn][2];
+      double ffftc = ftan[nn][0] * ftan[nn][0] + ftan[nn][1] * ftan[nn][1] + ftan[nn][2] * ftan[nn][2];
+      ffftc = sqrt(ffftc);
+      forces_file << std::setw(6) << mm << "  "
+                  << std::setprecision(5) << std::setw(10) << ftc0 << "  "
+                  << std::setw(10) << ftc1 << "  "
+                  << std::setw(10) << ftc2 << "  "
+                  << std::setw(10) << ffftc
+                  << std::endl;
+  }
+  forces_file << " ================================================== "
+              << std::endl;
+  // ===================================================
+
 }
 
 /* ---------------------------------------------------------------------- */
