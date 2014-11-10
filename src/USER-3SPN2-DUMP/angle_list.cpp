@@ -250,7 +250,7 @@ void AngleList::compute(int eflag, int vflag)
   energy_file << " ================================================== "
               << std::endl;
   forces_file << std::setw(6) << "i"
-              << std::setw(10) << "fx"
+              << std::setw(12) << "fx"
               << std::setw(12) << "fy"
               << std::setw(12) << "fz"
               << std::setw(12) << "|f|"
@@ -267,7 +267,7 @@ void AngleList::compute(int eflag, int vflag)
       double ftc2 = ftan[nn][2];
       double ffftc = ftan[nn][0] * ftan[nn][0] + ftan[nn][1] * ftan[nn][1] + ftan[nn][2] * ftan[nn][2];
       ffftc = sqrt(ffftc);
-      forces_file << std::setw(6) << mm
+      forces_file << std::setw(6) << mm << "  "
                   << std::setprecision(5) << std::setw(10) << ftc0 << "  "
                   << std::setw(10) << ftc1 << "  "
                   << std::setw(10) << ftc2 << "  "
