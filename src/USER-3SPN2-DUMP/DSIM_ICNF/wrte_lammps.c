@@ -282,22 +282,46 @@ void wrte_lammps(char *dnme)
         bstk_thta[15] = 102.14;
     }
 
-    bstk_eps[0] = 14.39;  // AA
-    bstk_eps[1] = 14.34;  // AT
-    bstk_eps[2] = 13.25;  // AG
-    bstk_eps[3] = 14.51;  // AC
-    bstk_eps[4] = 10.37;  // TA
-    bstk_eps[5] = 13.36;  // TT
-    bstk_eps[6] = 10.34;  // TG
-    bstk_eps[7] = 12.89;  // TC
-    bstk_eps[8] = 14.81;  // GA
-    bstk_eps[9] = 15.57;  // GT
-    bstk_eps[10] = 14.93; // GG
-    bstk_eps[11] = 15.39; // GC
-    bstk_eps[12] = 11.42; // CA
-    bstk_eps[13] = 12.79; // CT
-    bstk_eps[14] = 10.52; // CG
-    bstk_eps[15] = 13.24; // CC
+
+    if ((dna_type == 0) || (dna_type == 2)) {
+
+        bstk_eps[0] = 14.39;  // AA
+        bstk_eps[1] = 14.34;  // AT
+        bstk_eps[2] = 13.25;  // AG
+        bstk_eps[3] = 14.51;  // AC
+        bstk_eps[4] = 10.37;  // TA
+        bstk_eps[5] = 13.36;  // TT
+        bstk_eps[6] = 10.34;  // TG
+        bstk_eps[7] = 12.89;  // TC
+        bstk_eps[8] = 14.81;  // GA
+        bstk_eps[9] = 15.57;  // GT
+        bstk_eps[10] = 14.93; // GG
+        bstk_eps[11] = 15.39; // GC
+        bstk_eps[12] = 11.42; // CA
+        bstk_eps[13] = 12.79; // CT
+        bstk_eps[14] = 10.52; // CG
+        bstk_eps[15] = 13.24; // CC
+    }
+    else if (dna_type == 1 ){
+       bstk_eps[0] =  13.820 ;// AA
+       bstk_eps[1] =  15.050 ;// AT
+       bstk_eps[2] =  13.320 ;// AG
+       bstk_eps[3] =  15.820 ;// AC
+       bstk_eps[4] =   9.150 ;// TA
+       bstk_eps[5] =  12.440 ;// TT
+       bstk_eps[6] =   9.580 ;// TG
+       bstk_eps[7] =  13.110 ;// TC
+       bstk_eps[8] =  13.760 ;// GA
+       bstk_eps[9] =  14.590 ;// GT
+       bstk_eps[10] = 14.770 ;// GG
+       bstk_eps[11] = 15.170 ;// GC
+       bstk_eps[12] =  9.250 ;// CA
+       bstk_eps[13] = 12.420 ;// CT
+       bstk_eps[14] =  8.830 ;// CG
+       bstk_eps[15] = 14.010 ;// CC
+    }
+
+
 
     for (i = 0; i < 16; i++)
     {   
