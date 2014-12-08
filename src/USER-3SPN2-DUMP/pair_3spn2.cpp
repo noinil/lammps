@@ -1304,20 +1304,20 @@ void Pair3spn2::assign_angles(char *dna_type, double***angles)
         angle[5][3][3] = EMPTY;
     } else if (strcmp("bdna/curv",dna_type) == 0) {
         angle[0][0][0] = EMPTY;
-        angle[0][0][1] = 116.09;
+        angle[0][0][1] = 110.92;
         angle[0][0][2] = EMPTY;
         angle[0][0][3] = EMPTY;
-        angle[0][1][0] = 116.09;
+        angle[0][1][0] = 110.92;
         angle[0][1][1] = EMPTY;
         angle[0][1][2] = EMPTY;
         angle[0][1][3] = EMPTY;
         angle[0][2][0] = EMPTY;
         angle[0][2][1] = EMPTY;
         angle[0][2][2] = EMPTY;
-        angle[0][2][3] = 131.78;
+        angle[0][2][3] = 120.45;
         angle[0][3][0] = EMPTY;
         angle[0][3][1] = EMPTY;
-        angle[0][3][2] = 131.78;
+        angle[0][3][2] = 120.45;
         angle[0][3][3] = EMPTY;
 
 
